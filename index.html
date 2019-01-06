@@ -17,12 +17,41 @@
     <script>
         let movimentos = [];
         $create.init();
-
         $(document).on('mousedown', '.peca', function () {
+            resetMovs();
             movimentos = [];
-            $jogadas[$(this).attr('data-tipo')](this);
+            $jogadas[$(this).attr('data-tipo')](this, true);
+            $setCasas(movimentos);
+            if (movimentos.length)
+                $(this).closest(`.casa`).addClass('on');
         });
-   
+
+        let corDefault = 'clara';
+        $(document).on('keydown', '.casa', function (e) {
+            if (e.keyCode == 46)
+                return $(this).empty();
+            if (e.keyCode == 104) {
+                corDefault = corDefault == 'clara' ? 'escura' : 'clara';
+                return;
+            }
+
+            if (![97, 98, 99, 100, 101, 102,].includes(e.keyCode)) return;
+
+            let tipo = e.keyCode == 97
+                ? 'rei'
+                : e.keyCode == 98
+                    ? 'rainha'
+                    : e.keyCode == 99
+                        ? 'torre'
+                        : e.keyCode == 100
+                            ? 'cavalo'
+                            : e.keyCode == 101
+                                ? 'bispo'
+                                : 'peao';
+
+            $(this).html($create.html(corDefault, new Date().getTime(), tipo, $(this).data('pos'), 'medio'));
+        });
+
     </script>
 </body>
 

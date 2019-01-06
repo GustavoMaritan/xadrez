@@ -5,7 +5,7 @@ window.$create = (function () {
             let cor = i % 2 == 0 ? 0 : 1;
             for (let j = 0; j < 8; j++) {
                 $('.tabuleiro').append(
-                    `<div class="casa ${cors[cor]}" ondrop="drop(event)" ondragover="allowDrop(event)"` +
+                    `<div tabindex="0" class="casa ${cors[cor]}" ondrop="drop(event)" ondragover="allowDrop(event)"` +
                     ` data-col="${j + 1}" data-row="${i + 1}" data-pos="${i + 1}-${j + 1}"></div>`
                 )
                 cor = cor == 1 ? 0 : 1;
@@ -37,7 +37,7 @@ window.$create = (function () {
         });
     }
 
-    function _pecasgrandes(){
+    function _pecasgrandes() {
         $(`[data-pos="1-4"]`).html(_html('clara', 1, 'rainha', '1-4', 'grande'));
         $(`[data-pos="1-5"]`).html(_html('clara', 1, 'rei', '1-5', 'grande'));
         $(`[data-pos="8-4"]`).html(_html('escura', 1, 'rainha', '8-4', 'grande'));
@@ -55,8 +55,9 @@ window.$create = (function () {
             ` class="peca ${cor} ${tam}">`
     }
 
-    function _init() {
+    function _init(pecas) {
         _tabuleiro();
+        if (!pecas) return;
         _peao();
         _pecasMedias();
         _pecasgrandes();
