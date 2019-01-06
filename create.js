@@ -37,6 +37,13 @@ window.$create = (function () {
         });
     }
 
+    function _pecasgrandes(){
+        $(`[data-pos="1-4"]`).html(_html('clara', 1, 'rainha', '1-4', 'grande'));
+        $(`[data-pos="1-5"]`).html(_html('clara', 1, 'rei', '1-5', 'grande'));
+        $(`[data-pos="8-4"]`).html(_html('escura', 1, 'rainha', '8-4', 'grande'));
+        $(`[data-pos="8-5"]`).html(_html('escura', 1, 'rei', '8-5', 'grande'));
+    }
+
     function _html(cor, id, tipo, pos, tam) {
         return `<img id="${tipo}-${cor}-${id}"` +
             ` src="./pecas/${tipo}${cor != 'clara' ? 2 : ''}.png"` +
@@ -52,6 +59,7 @@ window.$create = (function () {
         _tabuleiro();
         _peao();
         _pecasMedias();
+        _pecasgrandes();
     }
 
     return {
