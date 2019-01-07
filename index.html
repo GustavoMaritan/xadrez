@@ -16,15 +16,21 @@
     </div>
     <script>
         let movimentos = [];
+        let movimentosNoCheck = [];
         $create.init();
         $(document).on('mousedown', '.peca', function () {
             resetMovs();
-            movimentos = [];
+            movimentos = [];            // TODO MOVIMENTOS POSSIVEIS
+            movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
             $jogadas[$(this).attr('data-tipo')](this, true);
             $setCasas(movimentos);
             if (movimentos.length)
                 $(this).closest(`.casa`).addClass('on');
         });
+
+        $('.casa[data-pos="1-3"]').html($create.html('clara', new Date().getTime(), 'rei', "1-3", 'grande'));
+        $('.casa[data-pos="2-3"]').html($create.html('clara', new Date().getTime(), 'peao', "2-3", ''));
+        $('.casa[data-pos="7-3"]').html($create.html('escura', new Date().getTime(), 'torre', "7-3", 'medio'));
 
         let corDefault = 'clara';
         $(document).on('keydown', '.casa', function (e) {

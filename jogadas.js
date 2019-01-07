@@ -1,4 +1,25 @@
 (() => {
+    const $setOcupadas = (_casa, _movList, _tipo, ocupadas) => {
+        let _pos = _casa.attr('data-pos').split('-').map(Number);
+        if (!ocupadas) return;
+        if (_casa.html()) {
+            ocupadas.push(_pos);
+        }
+        if (_tipo == 'rei')
+            _movList.push({
+                r: _pos[0],
+                c: _pos[1]
+            });
+    };
+    const $setMovNoCheck = (_ocupadas, _movimentosNoCheck, _item) => {
+        if (_ocupadas.length > 1) return false;
+        if (!_movimentosNoCheck.length) return false;
+        let itemPos = $(_item).attr('data-pos').split('-').map(Number);
+        if (!_movimentosNoCheck.some(x => x.r == itemPos[0] && x.c == itemPos[1])) return false;
+        movimentosNoCheck.push(_movimentosNoCheck);
+        return false;
+    };
+
     const $torre = {
         getPositions(pos, ativo) {
             let movs = [];
@@ -23,35 +44,25 @@
             let casa;
             let ocupadas = [];
             let casaMov = $(`.casa[data-pos="${mov.r}-${mov.c}"]`);
-
+            let tipo = casaMov.find('img').attr('data-tipo');
+            let movimentosNoCheckTorre = [];
             if (r.start > r.end) {
                 for (let p = r.start - 1; p > r.end; p--) {
                     casa = isRow
                         ? $(`.casa[data-pos="${p}-${mov.c}"]`)
                         : $(`.casa[data-pos="${mov.r}-${p}"]`);
-                    if (casa.html()) {
-                        ocupadas.push(casa.attr('data-pos'));
-                    }
+                    $setOcupadas(casa, movimentosNoCheckTorre, tipo, ocupadas);
                 }
             } else {
                 for (let p = r.start + 1; p < r.end; p++) {
                     casa = isRow
                         ? $(`.casa[data-pos="${p}-${mov.c}"]`)
                         : $(`.casa[data-pos="${mov.r}-${p}"]`);
-                    if (casa.html()) {
-                        ocupadas.push(casa.attr('data-pos'));
-                    }
+                    $setOcupadas(casa, movimentosNoCheckTorre, tipo, ocupadas);
                 }
             }
-            if (ocupadas.length) {
-                if (!item) return false;
-                let tipo = casaMov.find('img').attr('data-tipo');
-                if (ocupadas.length != 1 || tipo != 'rei') return false;
-                let itemPos = $(item).attr('data-pos').split('-').map(Number);
-                ocupadas = ocupadas[0].split('-').map(Number);
-                if (ocupadas[0] == itemPos[0] && ocupadas[1] == itemPos[1]) return mov;
-                return false;
-            };
+            if (item) return $setMovNoCheck(ocupadas, movimentosNoCheckTorre, item);
+            if (ocupadas.length) return false;
             if (!ativo && _mesmaCor(element, casaMov)) return mov;
             if (_mesmaCor(element, casaMov)) return false;
             mov.a = casaMov.html() ? 'atk' : 'mov';
@@ -93,7 +104,7 @@
             }
             return movs;
         },
-        movValid(mov, pos, element, ativo) {
+        movValid(mov, pos, element, ativo, item) {
             let r = {
                 start: pos[0] > mov.r ? mov.r : pos[0],
                 end: pos[0] > mov.r ? pos[0] : mov.r
@@ -105,19 +116,20 @@
                 ? mov.c > pos[1] ? -1 : 1
                 : pos[1] > mov.c ? -1 : 1;
 
+            let casaMov = $(`.casa[data-pos="${mov.r}-${mov.c}"]`);
+            let tipo = casaMov.find('img').attr('data-tipo');
+            let movimentosNoCheckBispo = [];
+
             for (let p = r.start + 1; p < r.end; p++) {
                 col += (1 * multi);
                 casa = $(`.casa[data-pos="${p}-${col}"]`);
-                if (casa.html() && casa.html().trim()) {
-                    ocupadas.push(1)
-                };
+                $setOcupadas(casa, movimentosNoCheckBispo, tipo);
             }
-
-            casa = $(`.casa[data-pos="${mov.r}-${mov.c}"]`);
+            if (item) return $setMovNoCheck(ocupadas, movimentosNoCheckBispo, item);
             if (ocupadas.length) return false;
-            if (!ativo && _mesmaCor(element, casa)) return mov;
-            if (_mesmaCor(element, casa)) return false;
-            mov.a = casa.html() ? 'atk' : 'mov';
+            if (!ativo && _mesmaCor(element, casaMov)) return mov;
+            if (_mesmaCor(element, casaMov)) return false;
+            mov.a = casaMov.html() ? 'atk' : 'mov';
             return mov;
         },
         setMov(movs, pos, element, ativo) {
@@ -184,7 +196,6 @@
         },
         setMov(movs, pos, element, ativo) {
             movs.forEach(x => {
-                console.log('Peao P ', x)
                 let casa = $(`.casa[data-pos="${x.r}-${x.c}"]`);
                 x.a = x.t;
                 if (x.t == 'mov') {
@@ -201,7 +212,6 @@
                     }
                 }
             });
-            console.log('Peao M ', movimentos)
         }
     }
     const $rei = {
@@ -238,7 +248,12 @@
             return movs;
         },
         setMov(movs, pos, element) {
-            _verificaAdversario(element);
+            let corAdvers = $(element).attr('data-cor') == 'clara' ? 'escura' : 'clara';
+            $(`.peca[data-cor="${corAdvers}"]`).each(function (obj) {
+                $jogadas[$(this).attr('data-tipo')](this);
+            });
+            console.log('movimentos', movimentos)
+            console.log('movs', movs)
             let possiveis = movs.map(x => {
                 if (!movimentos.some(y => y.r == x.r && y.c == x.c)) {
                     let casa = _getCasa(x);
@@ -246,6 +261,8 @@
                     return x;
                 }
             }).filter(x => x);
+            console.log('possiveis', possiveis)
+
             return possiveis;
         }
     }
@@ -268,49 +285,53 @@
         let corAdvers = $(element).attr('data-cor') == 'clara' ? 'escura' : 'clara';
         $(`.peca[data-cor="${corAdvers}"]`).each(function (obj) {
             $jogadas[$(this).attr('data-tipo')](this, false, element);
+            if (['bispo', 'torre', 'rainha'].includes($(this).attr('data-tipo'))) {
+            }
         });
     }
+    const _filterMovs = (element, movs, item) => {
+        if (item) return movs;
+        _verificaAdversario(element);
+
+        console.log(movimentosNoCheck)
+        return movimentosNoCheck.length
+            ? movs.filter(x => movimentosNoCheck.some(y => y.some(z => z.r == x.r && z.c == x.c)))
+            : movs;
+    }
+
     const _jogadas = {
-        peao: (element, ativo) => {
+        peao: (element, ativo, item) => {
             let isClara = $(element).attr(`data-cor`) == 'clara';
             let pos = _getPosition(element);
             let movs = $peao.getPositions(pos, isClara, ativo);
-
-            _verificaAdversario(element);
-
-            let _rei = $(`.peca[data-cor="${$(element).attr(`data-cor`)}"][data-tipo="rei"]`)
-                .attr('data-pos').split('-').map(Number);
-
-            console.log('_rei', _rei)
-            console.log('movimentos', movimentos)
-
-            if (movimentos.some(x => x.r == _rei[0] && x.c == _rei[1])) {
-                console.log(1111)
-                movimentos = [];
-                return;
-            }
+            movs = _filterMovs(element, movs, item);
             $peao.setMov(movs, pos, element, ativo);
         },
         torre: (element, ativo, item) => {
             let pos = _getPosition(element);
             let movs = $torre.getPositions(pos, ativo);
+            movs = _filterMovs(element, movs, item);
             $torre.setMov(movs, pos, element, ativo, item);
         },
-        cavalo: (element, ativo) => {
+        cavalo: (element, ativo, item) => {
             let pos = _getPosition(element);
             let movs = $cavalo.getPositions(pos);
+            movs = _filterMovs(element, movs, item);
             $cavalo.setMov(movs, pos, element, ativo);
         },
         bispo: (element, ativo, item) => {
             let pos = _getPosition(element);
             let movs = $bispo.getPositions(pos, ativo);
+            movs = _filterMovs(element, movs, item);
             $bispo.setMov(movs, pos, element, ativo);
         },
         rainha: (element, ativo, item) => {
             let pos = _getPosition(element);
             let movs = $torre.getPositions(pos, ativo);
+            movs = _filterMovs(element, movs, item);
             $torre.setMov(movs, pos, element, ativo);
             movs = $bispo.getPositions(pos, ativo);
+            movs = _filterMovs(element, movs, item);
             $bispo.setMov(movs, pos, element, ativo);
         },
         rei: (element, ativo) => {
