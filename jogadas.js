@@ -18,6 +18,29 @@
         return false;
     };
 
+    const $validMovs = (ocupadas, movNoCheck, item, ativo, element, casa, mov, pos) => {
+        if (item) return $setMovNoCheck(ocupadas, movNoCheck, item);
+        if (ocupadas.length) {
+            if (ativo) return false;
+            let _rei = ocupadas.find(x => $(`.peca[data-pos="${x[0]}-${x[1]}"]`).attr('data-tipo') == 'rei');
+            if (_rei) {
+                let col = ocupadas.filter(
+                    (x => x[1] > _rei[1] && x[1] < +pos[1]) ||
+                    (x => x[1] < _rei[1] && x[1] > +pos[1]) ||
+                    (x => x[0] > _rei[0] && x[0] < +pos[0]) ||
+                    (x => x[0] < _rei[0] && x[0] > +pos[0])
+                )
+                if (col.length) return false;
+            } else {
+                return false;
+            }
+        }
+        if (!ativo && _mesmaCor(element, casa)) return mov;
+        if (_mesmaCor(element, casa)) return false;
+        mov.a = casa.html() ? 'atk' : 'mov';
+        return mov;
+    }
+
     const $torre = {
         getPositions(pos, ativo) {
             let movs = [];
@@ -59,26 +82,7 @@
                     $setOcupadas(casa, movimentosNoCheckTorre, tipo, ocupadas);
                 }
             }
-            if (item) return $setMovNoCheck(ocupadas, movimentosNoCheckTorre, item);
-            if (ocupadas.length) {
-                if (ativo) return false;
-                let _rei = ocupadas.find(x => $(`.peca[data-pos="${x[0]}-${x[1]}"]`).attr('data-tipo') == 'rei');
-                if (_rei) {
-                    let col = ocupadas.filter(
-                        (x => x[1] > _rei[1] && x[1] < +pos[1]) ||
-                        (x => x[1] < _rei[1] && x[1] > +pos[1]) ||
-                        (x => x[0] > _rei[0] && x[0] < +pos[0]) ||
-                        (x => x[0] < _rei[0] && x[0] > +pos[0])
-                    )
-                    if (col.length) return false;
-                } else {
-                    return false;
-                }
-            }
-            if (!ativo && _mesmaCor(element, casaMov)) return mov;
-            if (_mesmaCor(element, casaMov)) return false;
-            mov.a = casaMov.html() ? 'atk' : 'mov';
-            return mov;
+            return $validMovs(ocupadas, movimentosNoCheckTorre, item, ativo, element, casaMov, mov, pos);
         },
         setMov(movs, pos, element, ativo, item) {
             movs.forEach(x => {
@@ -137,12 +141,7 @@
                 casa = $(`.casa[data-pos="${p}-${col}"]`);
                 $setOcupadas(casa, movimentosNoCheckBispo, tipo, ocupadas);
             }
-            if (item) return $setMovNoCheck(ocupadas, movimentosNoCheckBispo, item);
-            if (ocupadas.length) return false;
-            if (!ativo && _mesmaCor(element, casaMov)) return mov;
-            if (_mesmaCor(element, casaMov)) return false;
-            mov.a = casaMov.html() ? 'atk' : 'mov';
-            return mov;
+            return $validMovs(ocupadas, movimentosNoCheckBispo, item, ativo, element, casaMov, mov, pos);
         },
         setMov(movs, pos, element, ativo, item) {
             movs.forEach(x => {
