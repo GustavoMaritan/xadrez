@@ -76,12 +76,18 @@
 .casa.escura {
     background: rgb(102, 181, 123);
     /* background: #557377; */
-    /* background: rgba(153,104,52,1);
-    background: linear-gradient(to right, rgba(153,104,52,1) 0%, rgba(135,91,47,1) 26%, rgba(153,104,52,1) 55%, rgba(135,91,47,1) 79%, rgba(153,104,52,1) 100%); */
+    /*
+    background: rgba(153,104,52,1);
+    background: linear-gradient(to right, rgba(153,104,52,1) 0%, rgba(135,91,47,1) 26%, rgba(153,104,52,1) 55%, rgba(135,91,47,1) 79%, rgba(153,104,52,1) 100%);
+    */
 }
 
  .peca {
     width: 20px;
+}
+
+.peca.escura{
+    filter: grayscale(1);
 }
 
 .peca.media {
