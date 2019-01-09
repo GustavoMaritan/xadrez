@@ -25,9 +25,11 @@ function drop(ev) {
 
     let pc = document.getElementById(data);
 
+    let old = $(pc).closest('div');
+
     $(pc).attr('data-pos', pos.join('-'));
 
     $(ev.target).html(pc);
     //resetMovs();
-    efetivoMov(ev.target);
+    efetivoMov(ev.target, old);
 }

@@ -8,14 +8,75 @@
     <script src="./dragDrop.js"></script>
     <script src="./utils.js"></script>
     <script src="./jogadas.js"></script>
+
+    <style>
+        .jogo {
+            width: 70%;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .menu {
+            width: 50%;
+            display: flex;
+            border: 1px solid #3e3e3e;
+            flex-direction: column;
+        }
+
+        ul.settings{
+            padding-left: 10px;
+            color: rgb(197, 197, 197)
+        }
+        li{
+            list-style-type: none;
+        }
+    </style>
 </head>
 
 <body>
     <div class="content">
-        <div class="tabuleiro"></div>
+        <div class="jogo">
+            <div class="tabuleiro"></div>
+        </div>
+        <div class="menu">
+            <div>
+                <ul class="settings">
+                    <li><input type="checkbox" checked data-tipo="movimentos" onchange="ajudas(this)" id="">Movimentos</li>
+                    <li><input type="checkbox" checked data-tipo="ultimoMovimento" onchange="ajudas(this)" id="">Ultimos
+                        Movimentos</li>
+                    <li><input type="checkbox" checked data-tipo="ultimoMovimentoClick" onchange="ajudas(this)" id="">Ultimos
+                        Movimentos Percistir</li>
+                    <li><input type="checkbox" checked data-tipo="selected" onchange="ajudas(this)" id="">Peca
+                        selecionada</li>
+                </ul>
+            </div>
+            <div>
+                <div> </div>
+                <div></div>
+            </div>
+        </div>
     </div>
 
     <script>
+        function start() {
+            $('.tabuleiro').toggleClass('off')
+        }
+        let settings = {
+            ajudas: {
+                movimentos: true,
+                ultimoMovimento: true,
+                ultimoMovimentoClick: true,
+                selected: true,
+                check: true
+            }
+        }
+
+        function ajudas(obj) {
+            settings.ajudas[$(obj).data('tipo')] = $(obj).prop('checked');
+        }
+
         let movimentos = [];
         let movimentosNoCheck = [];
         $create.init(true);
@@ -32,7 +93,7 @@
             movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
             $jogadas[$(this).attr('data-tipo')](this, true);
             $setCasas(movimentos);
-            if (movimentos.length)
+            if (movimentos.length && settings.ajudas.selected)
                 $(this).closest(`.casa`).addClass('on');
         });
 
@@ -65,7 +126,6 @@
         });
 
         /*
-            * bloquear movimento rei pro lado oposto da peça(torre, bispo, rainha)
             * Peão andar 2 primeira mexida - podendo ser comido nas duas casas
             * Cria Regras do jogo
         */

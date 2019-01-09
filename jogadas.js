@@ -17,7 +17,6 @@
         movimentosNoCheck.push(_movimentosNoCheck);
         return false;
     };
-
     const $validMovs = (ocupadas, movNoCheck, item, ativo, element, casa, mov, pos) => {
         if (item) return $setMovNoCheck(ocupadas, movNoCheck, item);
         if (ocupadas.length) {
@@ -284,6 +283,7 @@
         return $(element).attr('data-pos').split('-').map(Number);
     }
     const _setCasas = ($movimentos) => {
+        if (!settings.ajudas.movimentos) return;
         $movimentos.map(x => {
             let casa = $(`.casa[data-pos="${x.r}-${x.c}"]`);
             casa.addClass(x.a == 'mov' ? 'select' : 'comer');
@@ -350,6 +350,7 @@
             movimentos = $rei.setMov(movs, pos, element);
         }
     }
+    
     window.$jogadas = _jogadas;
     window.$setCasas = _setCasas;
 })();

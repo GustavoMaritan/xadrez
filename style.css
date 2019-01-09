@@ -1,9 +1,13 @@
 .content{
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     width: 100%;
     height: 100%;
-    justify-content: center;
-    align-items: center;
+    /* background: rgb(70, 48, 24) */
+    background: rgb(41, 41, 41);
 }
 
 .tabuleiro {
@@ -11,7 +15,13 @@
     height: 530px;
     flex-direction: column;
     position: relative;
-    border: 10px solid #523500;
+    /* border: 10px solid #523500; */
+    border: 10px solid #757575;
+    transition: all 0.5s ease;
+}
+
+.tabuleiro.off {
+    transform: perspective(50em) rotateX(17deg);
 }
 
 .casa {
@@ -64,12 +74,14 @@
 }
 
 .casa.escura {
-    background: #557377;
+    background: rgb(102, 181, 123);
+    /* background: #557377; */
+    /* background: rgba(153,104,52,1);
+    background: linear-gradient(to right, rgba(153,104,52,1) 0%, rgba(135,91,47,1) 26%, rgba(153,104,52,1) 55%, rgba(135,91,47,1) 79%, rgba(153,104,52,1) 100%); */
 }
 
-.peca {
+ .peca {
     width: 20px;
-    /* height: 47%; */
 }
 
 .peca.media {
@@ -80,4 +92,4 @@
 .peca.grande {
     width: 33px;
     height: 56px;
-}
+} 
