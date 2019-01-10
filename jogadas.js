@@ -38,19 +38,26 @@
         if (_mesmaCor(element, casa)) return false;
         mov.a = casa.html() ? 'atk' : 'mov';
         return mov;
-    }
+    };
 
     const $torre = {
-        getPositions(pos, ativo) {
+        getPositions(pos, filter) {
             let movs = [];
             for (let p = 0; p < 2; p++) {
                 for (let value = 1; value < 9; value++) {
                     if (value == (p % 2 == 0 ? +pos[0] : +pos[1])) continue;
-                    movs.push({
+
+                    // movs.push({
+                    //     r: p % 2 == 0 ? value : +pos[0],
+                    //     c: p % 2 == 0 ? +pos[1] : value,
+                    //     t: p % 2 == 0 ? 'row' : 'col'
+                    // });
+
+                    movs = _filter(movs, {
                         r: p % 2 == 0 ? value : +pos[0],
                         c: p % 2 == 0 ? +pos[1] : value,
                         t: p % 2 == 0 ? 'row' : 'col'
-                    })
+                    }, filter, pos);
                 }
             }
             return movs;
@@ -92,7 +99,7 @@
         }
     }
     const $bispo = {
-        getPositions(pos) {
+        getPositions(pos, filter) {
             let movs = [];
 
             for (let p = 0; p < 4; p++) {
@@ -112,7 +119,7 @@
                         (p == 2 && r > 0 && c < 9) ||
                         (p == 3 && r < 9 && c > 0)
                     )
-                        movs.push({ r, c });
+                        movs = _filter(movs, { r, c }, filter, pos);
                     else
                         cond = false;
                 }
@@ -151,7 +158,7 @@
         }
     }
     const $cavalo = {
-        getPositions(pos) {
+        getPositions(pos, filter) {
             let movs = [];
             for (let k = 0; k < 2; k++) { // esqueda | direita
                 for (let p = 0; p < 2; p++) { // cima | baixo
@@ -161,7 +168,7 @@
                             c: pos[1] + ((q % 2 == 0 ? 2 : 1) * (k % 2 == 0 ? -1 : 1))
                         };
                         if (m.r > 0 && m.r < 9 && m.c > 0 && m.c < 9)
-                            movs.push(m)
+                            movs = _filter(movs, m, filter, pos);
                     }
                 }
             }
@@ -183,25 +190,25 @@
         }
     }
     const $peao = {
-        getPositions(pos, isClara, ativo) {
-            let movs = [
-                {
-                    r: isClara ? +pos[0] + 1 : +pos[0] - 1,
-                    c: +pos[1] + 1,
-                    t: 'atk'
-                }, {
-                    r: isClara ? +pos[0] + 1 : +pos[0] - 1,
-                    c: +pos[1] - 1,
-                    t: 'atk'
-                }
-            ];
+        getPositions(pos, isClara, ativo, filter) {
+            let movs = _filter([], {
+                r: isClara ? +pos[0] + 1 : +pos[0] - 1,
+                c: +pos[1] + 1,
+                t: 'atk'
+            }, filter, pos);
+
+            movs = _filter(movs, {
+                r: isClara ? +pos[0] + 1 : +pos[0] - 1,
+                c: +pos[1] - 1,
+                t: 'atk'
+            }, filter, pos);
 
             if (ativo)
-                movs.push({
+                movs = _filter(movs, {
                     r: +pos[0] + (isClara ? 1 : -1),
                     c: +pos[1],
                     t: 'mov'
-                })
+                }, filter, pos);
             return movs;
         },
         setMov(movs, pos, element, ativo) {
@@ -304,39 +311,63 @@
             ? movs.filter(x => movimentosNoCheck.some(y => y.some(z => z.r == x.r && z.c == x.c)))
             : movs;
     }
+    const _filter = (movs, mov, filter, pos) => {
+        if (!filter || !filter.length)
+            movs.push(mov);
+        else if (mov.r == filter[0] && mov.c == filter[1]) {
+            mov.atacante = pos;
+            movs.push(mov);
+        }
+        return movs;
+    };
+    const _verificaXeque = (element) => {
+        let cor = $(element).attr('data-cor');
+        let _rei = $(`.peca[data-tipo="rei"][data-cor="${cor == 'clara' ? 'escura' : 'clara'}"]`)
+        let _pos = _rei.attr('data-pos').split('-').map(Number);
+        movimentos = [];
+        $(`.peca[data-cor="${cor}"]`).each(function (obj) {
+            $jogadas[$(this).attr('data-tipo')](this, false, false, _pos);
+        });
+        if (!movimentos.filter(x => x.atacante).length) {
+            settings.game.xeque = null;
+            return;
+        }
+        settings.game.xeque = movimentos.filter(x => x.atacante);
+        $(_rei).closest('.casa').addClass('comer');
+    }
 
     const _jogadas = {
-        peao: (element, ativo, item) => {
+        peao: (element, ativo, item, filter) => {
             let isClara = $(element).attr(`data-cor`) == 'clara';
             let pos = _getPosition(element);
-            let movs = $peao.getPositions(pos, isClara, ativo);
+            let movs = $peao.getPositions(pos, isClara, ativo, filter);
             movs = _filterMovs(element, movs, item);
             $peao.setMov(movs, pos, element, ativo, item);
         },
-        torre: (element, ativo, item) => {
+        torre: (element, ativo, item, filter) => {
             let pos = _getPosition(element);
-            let movs = $torre.getPositions(pos, ativo);
+            let movs = $torre.getPositions(pos, filter);
             movs = _filterMovs(element, movs, item);
             $torre.setMov(movs, pos, element, ativo, item);
         },
-        cavalo: (element, ativo, item) => {
+        cavalo: (element, ativo, item, filter) => {
             let pos = _getPosition(element);
-            let movs = $cavalo.getPositions(pos);
+            let movs = $cavalo.getPositions(pos, filter);
             movs = _filterMovs(element, movs, item);
             $cavalo.setMov(movs, pos, element, ativo, item);
         },
-        bispo: (element, ativo, item) => {
+        bispo: (element, ativo, item, filter) => {
             let pos = _getPosition(element);
-            let movs = $bispo.getPositions(pos, ativo);
+            let movs = $bispo.getPositions(pos, filter);
             movs = _filterMovs(element, movs, item);
             $bispo.setMov(movs, pos, element, ativo, item);
         },
-        rainha: (element, ativo, item) => {
+        rainha: (element, ativo, item, filter) => {
             let pos = _getPosition(element);
-            let movs = $torre.getPositions(pos, ativo);
+            let movs = $torre.getPositions(pos, filter);
             movs = _filterMovs(element, movs, item);
             $torre.setMov(movs, pos, element, ativo, item);
-            movs = $bispo.getPositions(pos, ativo);
+            movs = $bispo.getPositions(pos, filter);
             movs = _filterMovs(element, movs, item);
             $bispo.setMov(movs, pos, element, ativo, item);
         },
@@ -350,7 +381,8 @@
             movimentos = $rei.setMov(movs, pos, element);
         }
     }
-    
+
     window.$jogadas = _jogadas;
     window.$setCasas = _setCasas;
+    window.$verificaXeque = _verificaXeque;
 })();
