@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<div class=''></div>    
 
 <head>
     <link rel="stylesheet" href="style/style.css">
@@ -70,10 +71,10 @@
             historico: []
         }
     </script>
-    <script src="./create.js"></script>
-    <script src="./dragDrop.js"></script>
-    <script src="./utils.js"></script>
-    <script src="./jogadas.js"></script>
+    <script src="./js/create.js"></script>
+    <script src="./js/dragDrop.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/jogadas.js"></script>
 </head>
 
 <body>
@@ -125,19 +126,19 @@
 
         let movimentos = [];
         let movimentosNoCheck = [];
-        $create.init(true);
         /*
+        $create.init(true);
+        */
         $create.init();
         $('.casa[data-pos="2-4"]').html($create.html('clara', new Date().getTime(), 'rei', "2-4", 'grande'));
         $('.casa[data-pos="2-1"]').html($create.html('clara', new Date().getTime(), 'peao', "2-1", ''));
         $('.casa[data-pos="4-8"]').html($create.html('escura', new Date().getTime(), 'torre', "4-8", 'medio'));
         $('.casa[data-pos="8-8"]').html($create.html('escura', new Date().getTime(), 'rei', "8-8", 'grande'));
-        */
 
         $(document).on('mousedown', '.peca', function () {
             let cor = $(this).attr('data-cor');
             if (settings.game.jogadorVezCor != cor) return;
-            resetMovs();
+            $utils.resetMovs();
             movimentos = [];            // TODO MOVIMENTOS POSSIVEIS
             movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
             $jogadas[$(this).attr('data-tipo')](this, true);

@@ -26,7 +26,7 @@ function drop(ev) {
     let classe = $(pc).attr('data-cor');
     let total = $(`div.${classe}>.jogadas>p`).length;
     $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(ev.target).attr('data-pos')}</p>`)
-    efetivoMov(ev.target, old);
+    $utils.efetivoMov(ev.target, old);
     $verificaXeque(pc);
     settings.game.alterarJogadorVez({
         peca: $(pc).attr('data-tipo'),

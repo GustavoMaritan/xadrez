@@ -98,6 +98,7 @@
             });
         }
     }
+    
     const $bispo = {
         getPositions(pos, filter) {
             let movs = [];
