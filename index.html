@@ -5,6 +5,72 @@
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="style/menu.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        let settings = {
+            ajudas: {
+                movimentos: true,
+                ultimoMovimento: true,
+                ultimoMovimentoClick: true,
+                selected: true,
+                check: true
+            },
+            game: {
+                rodada: 1,
+                xeque: null,
+                _jogadorVez: 1,
+                jogador1: {
+                    id: 1,
+                    cor: 'clara',
+                    jogadas: []
+                },
+                jogador2: {
+                    id: 2,
+                    cor: 'escura',
+                    jogadas: []
+                },
+                get jogadorVez() {
+                    return settings.game['jogador' + settings.game._jogadorVez];
+                },
+                get jogadorVezCor() {
+                    return settings.game['jogador' + settings.game._jogadorVez].cor;
+                },
+                setMovimentoJogVez(mov) {
+                    console.log(mov);
+                    settings.game.jogadorVez.jogadas.push(mov);
+                },
+                alterarJogadorVez(mov) {
+                    settings.game.setMovimentoJogVez(mov);
+                    settings.game._jogadorVez = settings.game._jogadorVez == 1 ? 2 : 1;
+                    $(`.historico>div>span`).removeClass('ativo');
+                    $(`.historico>div.${settings.game.jogadorVez.cor}>span`).addClass('ativo');
+                },
+                resetPlayer() {
+                    settings.game.jogador1.jogadas = settings.game.jogador2.jogadas = [];
+                    settings.game.jogador1.cor = settings.game.jogador2.cor;
+                    settings.game.jogador2.cor = settings.game.jogador2.cor == 'clara' ? 'escura' : 'clara';
+                },
+                _new() {
+                    settings.historico.push({
+                        rodada: settings.game.rodada,
+                        vencedor: null,
+                        jogador1: {
+                            id: 1,
+                            cor: settings.game.jogador1.cor,
+                            jogadas: settings.game.jogador1.jogadas
+                        },
+                        jogador2: {
+                            id: 2,
+                            cor: settings.game.jogador2.cor,
+                            jogadas: settings.game.jogador2.jogadas
+                        }
+                    })
+                    settings.game.rodada++;
+                    settings.game._jogadorVez = settings.game.rodada % 2 == 0 ? 2 : 1;
+                }
+            },
+            historico: []
+        }
+    </script>
     <script src="./create.js"></script>
     <script src="./dragDrop.js"></script>
     <script src="./utils.js"></script>
@@ -29,40 +95,29 @@
                 </ul>
             </div>
             <div class="historico">
-                <div class="brancas">
-                    Brancas
+                <div class="clara">
+                    <span class="ativo">Brancas</span>
                     <div class="jogadas"></div>
                 </div>
-                <div class="negras">
-                    Negras
+                <div class="escura">
+                    <span>Negras</span>
                     <div class="jogadas"></div>
                 </div>
+            </div>
+            <div>
+                <button onclick="newGame()">New</button>
             </div>
         </div>
     </div>
 
     <script>
+        function newGame() {
+            settings.game._new();
+            $create.new(settings.game.rodada);
+        }
+
         function start() {
             $('.tabuleiro').toggleClass('off')
-        }
-        let settings = {
-            ajudas: {
-                movimentos: true,
-                ultimoMovimento: true,
-                ultimoMovimentoClick: true,
-                selected: true,
-                check: true
-            },
-            game: {
-                xeque: null,
-                jogadorVez: 'branca',
-                jogador1: {
-                    cor: 'branca'
-                },
-                jogador2: {
-                    cor: 'preta'
-                }
-            }
         }
 
         function ajudas(obj) {
@@ -71,22 +126,28 @@
 
         let movimentos = [];
         let movimentosNoCheck = [];
-        /*
         $create.init(true);
-        */
+        /*
         $create.init();
         $('.casa[data-pos="2-4"]').html($create.html('clara', new Date().getTime(), 'rei', "2-4", 'grande'));
         $('.casa[data-pos="2-1"]').html($create.html('clara', new Date().getTime(), 'peao', "2-1", ''));
         $('.casa[data-pos="4-8"]').html($create.html('escura', new Date().getTime(), 'torre', "4-8", 'medio'));
+        $('.casa[data-pos="8-8"]').html($create.html('escura', new Date().getTime(), 'rei', "8-8", 'grande'));
+        */
 
         $(document).on('mousedown', '.peca', function () {
+            console.log('ddddd')
+            let cor = $(this).attr('data-cor');
+            //if (settings.game.jogadorVezCor != cor) return;
+            console.log('33333', cor)
+
             resetMovs();
             movimentos = [];            // TODO MOVIMENTOS POSSIVEIS
             movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
             $jogadas[$(this).attr('data-tipo')](this, true);
             $setCasas(movimentos);
             if (movimentos.length && settings.ajudas.selected)
-                $(this).closest(`.casa`).addClass('on');
+                $(this).closest(`.casa`).addClass('selected');
         });
 
 

@@ -192,23 +192,36 @@
     const $peao = {
         getPositions(pos, isClara, ativo, filter) {
             let movs = _filter([], {
-                r: isClara ? +pos[0] + 1 : +pos[0] - 1,
+                r: (
+                    (isClara && settings.game.rodada % 2 != 0) ||
+                    (!isClara && settings.game.rodada % 2 == 0)
+                ) ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] + 1,
                 t: 'atk'
             }, filter, pos);
 
             movs = _filter(movs, {
-                r: isClara ? +pos[0] + 1 : +pos[0] - 1,
+                r: (
+                    (isClara && settings.game.rodada % 2 != 0) ||
+                    (!isClara && settings.game.rodada % 2 == 0)
+                ) ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] - 1,
                 t: 'atk'
             }, filter, pos);
 
             if (ativo)
                 movs = _filter(movs, {
-                    r: +pos[0] + (isClara ? 1 : -1),
+                    r: +pos[0] + (
+                        (
+                            (isClara && settings.game.rodada % 2 != 0) ||
+                            (!isClara && settings.game.rodada % 2 == 0)
+                        )
+                            ? 1 : -1
+                    ),
                     c: +pos[1],
                     t: 'mov'
                 }, filter, pos);
+            console.log(movs)
             return movs;
         },
         setMov(movs, pos, element, ativo) {
@@ -338,6 +351,7 @@
 
     const _jogadas = {
         peao: (element, ativo, item, filter) => {
+            console.log(element)
             let isClara = $(element).attr(`data-cor`) == 'clara';
             let pos = _getPosition(element);
             let movs = $peao.getPositions(pos, isClara, ativo, filter);

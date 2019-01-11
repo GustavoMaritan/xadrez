@@ -53,6 +53,10 @@
     background-position: center !important;
 }
 
+.casa.selected {
+    background: #adeff7 !important;
+}
+
 .casa.comer {
     background: rgb(245, 154, 154) !important;
 }
@@ -100,7 +104,10 @@
     height: 56px;
 } 
 
-
+.historico>div>span.ativo{
+    font-weight: bold;
+    color: white;
+}
 
 
 ::-webkit-scrollbar {
