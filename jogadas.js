@@ -221,7 +221,6 @@
                     c: +pos[1],
                     t: 'mov'
                 }, filter, pos);
-            console.log(movs)
             return movs;
         },
         setMov(movs, pos, element, ativo) {
@@ -351,7 +350,6 @@
 
     const _jogadas = {
         peao: (element, ativo, item, filter) => {
-            console.log(element)
             let isClara = $(element).attr(`data-cor`) == 'clara';
             let pos = _getPosition(element);
             let movs = $peao.getPositions(pos, isClara, ativo, filter);

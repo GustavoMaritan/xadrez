@@ -35,7 +35,6 @@
                     return settings.game['jogador' + settings.game._jogadorVez].cor;
                 },
                 setMovimentoJogVez(mov) {
-                    console.log(mov);
                     settings.game.jogadorVez.jogadas.push(mov);
                 },
                 alterarJogadorVez(mov) {
@@ -136,11 +135,8 @@
         */
 
         $(document).on('mousedown', '.peca', function () {
-            console.log('ddddd')
             let cor = $(this).attr('data-cor');
-            //if (settings.game.jogadorVezCor != cor) return;
-            console.log('33333', cor)
-
+            if (settings.game.jogadorVezCor != cor) return;
             resetMovs();
             movimentos = [];            // TODO MOVIMENTOS POSSIVEIS
             movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
