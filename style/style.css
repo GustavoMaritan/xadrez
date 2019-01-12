@@ -34,6 +34,10 @@
     transition: all;
 }
 
+.casa:hover {
+    background: rgb(190, 243, 255) !important;
+}
+
 .casa.on {
     background: #aaeff7 !important;
 }

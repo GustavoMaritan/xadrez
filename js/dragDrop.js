@@ -21,59 +21,45 @@ function drag(ev) {
 function drop(ev) {
     ev.preventDefault();
     let data = ev.dataTransfer.getData("text");
-    let elem = $(ev.target).hasClass('casa')
-        ? $(ev.target)
-        : $(ev.target).closest('casa');
-    let pos = elem.attr('data-pos').split('-');
-    let movimento = movimentos.find(x => +x.r == +pos[0] && +x.c == +pos[1]);
-    if (!movimento) return ev.preventDefault(); // CASA NAO ENCONTRADA
-    let pc = document.getElementById(data);
-    let old = $(pc).closest('div');
-    if (!_liberaMovXequeMate(ev.target, pc)) return ev.preventDefault(); // XEQUE 
-    $(pc).attr('data-pos', pos.join('-'));
-    $(pc).attr('data-virgem', 0);
-    $(ev.target).html(pc);
-    _setMovPeao2(movimento);
-    _setMovRoque(movimento)
-    let classe = $(pc).attr('data-cor');
-    let total = $(`div.${classe}>.jogadas>p`).length;
-    $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(ev.target).attr('data-pos')}</p>`)
-    $utils.efetivoMov(ev.target, old);
-    $verificaXeque(pc);
-    settings.game.alterarJogadorVez({
-        peca: $(pc).attr('data-tipo'),
-        from: $(old).attr('data-pos').split('-').map(Number),
-        to: $(ev.target).attr('data-pos').split('-').map(Number)
-    });
-
-    //if (!_moverPeca()) return ev.preventDefault();
+    if (!_moverPeca(ev.target, document.getElementById(data))) return ev.preventDefault();
 }
 
-function _moverPeca(destino, peca) {
-    let elem = $(ev.target).hasClass('casa')
-        ? $(ev.target)
-        : $(ev.target).closest('casa');
+function _moverPeca(destino, peca, manual) {
+    let elem = $(destino).hasClass('casa')
+        ? $(destino)
+        : $(destino).closest('casa');
     let pos = elem.attr('data-pos').split('-');
     let movimento = movimentos.find(x => +x.r == +pos[0] && +x.c == +pos[1]);
     if (!movimento) return false; // CASA NAO ENCONTRADA
-    let pc = document.getElementById(data);
+    let pc = peca;
+    if (!_liberaMovXequeMate(destino, pc)) return false; // XEQUE 
+    if (manual)
+        _move($(pc).attr('data-pos').split('-').map(Number), pos, null, () => {
+            _finalizaDrop(pc, destino, movimento);
+        });
+    else {
+        $(pc).attr('data-pos', pos.join('-'));
+        $(pc).attr('data-virgem', 0);
+        $(destino).html(pc);
+        _finalizaDrop(pc, destino, movimento);
+    }
+}
+
+function _finalizaDrop(pc, destino, movimento) {
     let old = $(pc).closest('div');
-    if (!_liberaMovXequeMate(ev.target, pc)) return false; // XEQUE 
-    $(pc).attr('data-pos', pos.join('-'));
-    $(pc).attr('data-virgem', 0);
-    $(ev.target).html(pc);
     _setMovPeao2(movimento);
     _setMovRoque(movimento)
     let classe = $(pc).attr('data-cor');
     let total = $(`div.${classe}>.jogadas>p`).length;
-    $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(ev.target).attr('data-pos')}</p>`)
-    $utils.efetivoMov(ev.target, old);
+    $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(destino).attr('data-pos')}</p>`)
+    $utils.efetivoMov(destino, old);
     $verificaXeque(pc);
     settings.game.alterarJogadorVez({
         peca: $(pc).attr('data-tipo'),
         from: $(old).attr('data-pos').split('-').map(Number),
-        to: $(ev.target).attr('data-pos').split('-').map(Number)
+        to: $(destino).attr('data-pos').split('-').map(Number)
     });
+    $('.peca').removeAttr('data-ativo');
 }
 
 function _setMovPeao2(movimento) {
@@ -99,9 +85,7 @@ function _liberaMovXequeMate(casaDestino, peca) {
     return _peca.movimentos.some(x => x.r == _posDest[0] && x.c == _posDest[1]);
 }
 
-function _move(from, to, speed) {
-    from = from || [1, 8];
-    to = to || [8, 1];
+function _move(from, to, speed, callback) {
     let width = ($('.tabuleiro').width() * 12.5) / 100;
     let height = ($('.tabuleiro').height() * 12.5) / 100;
     let position = $(`.peca[data-pos="${from[0]}-${from[1]}"]`).position();
@@ -119,5 +103,6 @@ function _move(from, to, speed) {
         peca.css({ left: 'auto', top: 'auto' })
         $(`.casa[data-pos="${from[0]}-${from[1]}"]`).empty();
         $(`.casa[data-pos="${to[0]}-${to[1]}"]`).html(peca);
+        callback && callback();
     });
 }

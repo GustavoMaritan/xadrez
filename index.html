@@ -114,7 +114,6 @@
             </div>
             <div>
                 <button onclick="$utils.newGame()">New</button>
-                <button onclick="_move()">Move</button>
                 <input type="range" min="0" max="56" value="0" onchange="$utils.inclinar(this)">
             </div>
         </div>
@@ -127,6 +126,7 @@
         $create.init();
 
         $(document).on('mousedown', '.peca', function () {
+            $('.peca').removeAttr('data-ativo');
             if (settings.game.mate) return;
             let cor = $(this).attr('data-cor');
             if (settings.game.jogadorVezCor != cor) return;
@@ -146,8 +146,17 @@
                     movimentos = movimentos.filter(x => _peca.movimentos.some(y => y.r == x.r && y.c == x.c));
             }
             $setCasas(movimentos);
-            if (movimentos.length && settings.ajudas.selected)
+            if (movimentos.length)
+                $(this).attr('data-ativo', true);
+            if (movimentos.length && settings.ajudas.selected) {
                 $(this).closest(`.casa`).addClass('selected');
+            }
+        });
+
+        $(document).on('mousedown', '.casa', function () {
+            let peca = $('.peca[data-ativo]')[0];
+            if (!peca) return;
+            _moverPeca($(this), peca, true);
         });
 
         //GAMBI INSERE PECAS
@@ -178,8 +187,6 @@
         });
 
         /*
-            * Peão andar 2 primeira mexida - podendo ser comido nas duas casas
-            * Roque
             https://br.freepik.com/
         */
     </script>
