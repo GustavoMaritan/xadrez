@@ -34,14 +34,15 @@ function drop(ev) {
         ? $(ev.target)
         : $(ev.target).closest('casa');
     let pos = elem.attr('data-pos').split('-');
-    let casa = movimentos.find(x => +x.r == +pos[0] && +x.c == +pos[1]);
-    if (!casa) return ev.preventDefault(); // CASA NAO ENCONTRADA
+    let movimento = movimentos.find(x => +x.r == +pos[0] && +x.c == +pos[1]);
+    if (!movimento) return ev.preventDefault(); // CASA NAO ENCONTRADA
     let pc = document.getElementById(data);
     let old = $(pc).closest('div');
     if (!_liberaMovXequeMate(ev.target, pc)) return ev.preventDefault(); // XEQUE 
     $(pc).attr('data-pos', pos.join('-'));
     $(pc).attr('data-virgem', 0);
     $(ev.target).html(pc);
+    _setMovPeao2(movimento);
     let classe = $(pc).attr('data-cor');
     let total = $(`div.${classe}>.jogadas>p`).length;
     $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(ev.target).attr('data-pos')}</p>`)
@@ -52,4 +53,14 @@ function drop(ev) {
         from: $(old).attr('data-pos').split('-').map(Number),
         to: $(ev.target).attr('data-pos').split('-').map(Number)
     });
+}
+
+function _setMovPeao2(movimento) {
+    if (movimento.peao2Atk) {
+        $(`.casa[data-pos="${movimento.peao2Atk[0]}-${movimento.peao2Atk[1]}"]`).empty();
+    }
+    $(`.casa`).removeAttr('data-peao2');
+    if (!movimento.peao2) return;
+    $(`.casa[data-pos="${movimento.peao2.r}-${movimento.peao2.c}"]`)
+        .attr('data-peao2', `${movimento.r}-${movimento.c}`);
 }

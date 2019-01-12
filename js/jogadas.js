@@ -197,6 +197,7 @@
                 return (isClara && settings.game.rodada % 2 != 0) ||
                     (!isClara && settings.game.rodada % 2 == 0)
             }
+
             let movs = _filter([], {
                 r: _brancaPretaSobeDesce() ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] + 1,
@@ -213,13 +214,16 @@
                     c: +pos[1],
                     t: 'mov'
                 }, filter, pos);
-
-                // if (virgem)
-                //     movs = _filter(movs, {
-                //         r: +pos[0] + (_brancaPretaSobeDesce() ? 1 : -1),
-                //         c: +pos[1],
-                //         t: 'mov'
-                //     }, filter, pos);
+                if (virgem)
+                    movs = _filter(movs, {
+                        r: +pos[0] + (_brancaPretaSobeDesce() ? 2 : -2),
+                        c: +pos[1],
+                        t: 'mov',
+                        peao2: {
+                            r: +pos[0] + (_brancaPretaSobeDesce() ? 1 : -1),
+                            c: +pos[1],
+                        }
+                    }, filter, pos);
             }
 
             return movs;
@@ -237,7 +241,12 @@
                         if (!casa.html() || _mesmaCor(element, casa))
                             movimentos.push(x);
                     }
-                    if (casa.html() && !_mesmaCor(element, casa)) {
+                    if (casa.html() && !_mesmaCor(element, casa))
+                        movimentos.push(x);
+                    else {
+                        let peao2 = $(casa).attr('data-peao2');
+                        if (!peao2) return;
+                        x.peao2Atk = peao2.split('-').map(Number);
                         movimentos.push(x);
                     }
                 }
@@ -246,6 +255,8 @@
     }
     const $rei = {
         getPositions(pos, element, ativo) {
+            let virgem = !!+$(element).attr('data-virgem');
+            //ROQUE
             let movs = [];
             for (let p = 0; p < 4; p++) {
                 let mr = p == 0 ? -1 : p == 1 ? 0 : 1;
@@ -332,7 +343,7 @@
             movs.push(mov);
         }
         return movs;
-    };
+    }
     const _verificaXeque = (element) => {
         noXequeMateMovs = [];
         let cor = $(element).attr('data-cor');
@@ -383,7 +394,6 @@
             return;
         }
     }
-
     const _mateMovPossiveis = (rei, atack) => {
         //DESCUBRIR TODOS MOVIMENTOS PARA FULGA DO XEQUE...
         //SEM O REI
