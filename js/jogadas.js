@@ -94,6 +94,12 @@
             movs.forEach(x => {
                 let mov = $torre.movValid(x, pos, element, ativo, item);
                 if (!mov) return;
+                let casa = $(`.casa[data-pos="${mov.r}-${mov.c}"]`);
+                let m = _verificaPeao2(casa, mov);
+                if (m) {
+                    movimentos.push(m);
+                    return;
+                }
                 movimentos.push(mov);
             });
         }
@@ -153,6 +159,12 @@
             movs.forEach(x => {
                 let mov = $bispo.movValid(x, pos, element, ativo, item);
                 if (!mov) return;
+                let casa = $(`.casa[data-pos="${mov.r}-${mov.c}"]`);
+                let m = _verificaPeao2(casa, mov);
+                if (m) {
+                    movimentos.push(m);
+                    return;
+                }
                 movimentos.push(mov);
             });
         }
@@ -178,6 +190,11 @@
             movs.forEach(x => {
                 let casa = $(`.casa[data-pos="${x.r}-${x.c}"]`);
                 if (!casa.html()) {
+                    let m = _verificaPeao2(casa, x);
+                    if (m) {
+                        movimentos.push(m);
+                        return;
+                    }
                     x.a = 'mov';
                     movimentos.push(x);
                     return;
@@ -244,20 +261,17 @@
                     if (casa.html() && !_mesmaCor(element, casa))
                         movimentos.push(x);
                     else {
-                        let peao2 = $(casa).attr('data-peao2');
-                        if (!peao2) return;
-                        x.peao2Atk = peao2.split('-').map(Number);
-                        movimentos.push(x);
+                        let m = _verificaPeao2(casa, x);
+                        m && movimentos.push(m);
                     }
+
                 }
             });
         }
     }
     const $rei = {
         getPositions(pos, element, ativo) {
-            let virgem = !!+$(element).attr('data-virgem');
-            //ROQUE
-            let movs = [];
+            let movs = roque();
             for (let p = 0; p < 4; p++) {
                 let mr = p == 0 ? -1 : p == 1 ? 0 : 1;
                 let mc = p == 3 ? 0 : -1;
@@ -287,6 +301,26 @@
                 }
             }
             return movs;
+
+            function roque() {
+                let virgem = !!+$(element).attr('data-virgem');
+                let _movs = [];
+                let torres =
+                    $(`.peca[data-tipo="torre"][data-virgem="1"][data-cor="${$(element).attr('data-cor')}"]`);
+
+                if (!virgem || !torres.length || !settings.game.xeque) return _movs;
+
+                torres.each(function (i) {
+                    let t = $(this).attr('data-pos').split('-').map(Number);
+
+
+                    _movs.push({
+                        roque: {},
+                        r: 0,
+                        c: 0
+                    });
+                });
+            }
         },
         setMov(movs, pos, element) {
             let corAdvers = $(element).attr('data-cor') == 'clara' ? 'escura' : 'clara';
@@ -296,6 +330,8 @@
             let possiveis = movs.map(x => {
                 if (!movimentos.some(y => y.r == x.r && y.c == x.c)) {
                     let casa = _getCasa(x);
+                    let m = _verificaPeao2(casa, x);
+                    if (m) return m;
                     x.a = casa.html() ? 'atk' : 'mov';
                     return x;
                 }
@@ -431,6 +467,13 @@
         }
         return result.filter(x => `${x[0]}-${x[1]}` != `${opcoes[1][0]}-${opcoes[1][1]}`);
     }
+    const _verificaPeao2 = (casa, mov) => {
+        let peao2 = $(casa).attr('data-peao2');
+        if (!peao2) return false;
+        mov.a = 'atk';
+        mov.peao2Atk = peao2.split('-').map(Number);
+        return mov;
+    };
 
     const _jogadas = {
         peao: (element, ativo, item, filter) => {

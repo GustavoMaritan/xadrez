@@ -18,6 +18,9 @@
     /* border: 10px solid #523500; */
     border: 10px solid #757575;
     transition: all 0.5s ease;
+
+    transform: rotate(180deg);
+
 }
 
 .tabuleiro.off {
@@ -88,6 +91,7 @@
 
  .peca {
     width: 20px;
+    transform: rotate(180deg);
 }
 
 .peca.escura{
