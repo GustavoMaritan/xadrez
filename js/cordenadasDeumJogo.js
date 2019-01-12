@@ -1,3 +1,19 @@
+let pecas = [
+    { n: 'rei', a: 'R' },
+    { n: 'Rainha', a: 'Q' },
+    { n: 'Torre', a: 'R' },
+    { n: 'Bispo', a: 'B' },
+    { n: 'Cavalo', a: 'N' },
+    { n: 'Peao', a: '' },
+]
+
+let opcoes = [
+    { n: 'x', v: 'captura' },
+    { n: '+', v: 'xeque' },
+    { n: '++', v: 'xeque duplo' },
+    { n: '#', v: 'mate' },
+]
+
 let jogs = [
     [
         'e4',
