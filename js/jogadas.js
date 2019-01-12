@@ -98,7 +98,6 @@
             });
         }
     }
-    
     const $bispo = {
         getPositions(pos, filter) {
             let movs = [];
@@ -334,8 +333,9 @@
         return movs;
     };
     const _verificaXeque = (element) => {
+        noXequeMateMovs = [];
         let cor = $(element).attr('data-cor');
-        let _rei = $(`.peca[data-tipo="rei"][data-cor="${cor == 'clara' ? 'escura' : 'clara'}"]`)
+        let _rei = $(`.peca[data-tipo="rei"][data-cor="${cor == 'clara' ? 'escura' : 'clara'}"]`);
         let _pos = _rei.attr('data-pos').split('-').map(Number);
         movimentos = [];
         $(`.peca[data-cor="${cor}"]`).each(function (obj) {
@@ -347,6 +347,78 @@
         }
         settings.game.xeque = movimentos.filter(x => x.atacante);
         $(_rei).closest('.casa').addClass('comer');
+        _xequeMate();
+    }
+    const _xequeMate = () => {
+        movimentos = [];
+        const _r = settings.game.xeque[0].r;
+        const _c = settings.game.xeque[0].c;
+        const _rei = $(`.peca[data-pos="${_r}-${_c}"]`);
+        if (settings.game.xeque.length > 1) {
+            $jogadas.rei(_rei, true);
+            if (movimentos.length) {
+                noXequeMateMovs = [{ peca: [_r, _c], movimentos: movimentos }];
+                return;
+            }
+            settings.game.mate = true;
+            console.log('Xeque Mate');
+            return;
+        }
+        let _movPossiveis = _mateMovPossiveis([_r, _c], settings.game.xeque[0].atacante);
+        $jogadas.rei(_rei, true);
+        noXequeMateMovs = [{ peca: [_r, _c], movimentos: movimentos }];
+        $(`.peca[data-cor="${$(_rei).attr('data-cor')}"]`).not('[data-tipo="rei"]').each(function (obj) {
+            let _pos = $(this).attr('data-pos').split('-').map(Number);
+            movimentos = [];
+            $jogadas[$(this).attr('data-tipo')](this, true);
+            noXequeMateMovs.push({
+                peca: [_pos[0], _pos[1]],
+                movimentos: movimentos.filter(x => _movPossiveis.some(y => y[0] == x.r && y[1] == x.c))
+            });
+        });
+        if (!noXequeMateMovs.some(x => x.movimentos.length)) {
+            settings.game.mate = true;
+            console.log('Xeque Mate');
+            return;
+        }
+    }
+
+    const _mateMovPossiveis = (rei, atack) => {
+        //DESCUBRIR TODOS MOVIMENTOS PARA FULGA DO XEQUE...
+        //SEM O REI
+        //[[r,c]]
+        let opcoes = [atack, rei];
+        let result = [];
+        let cont = 0;
+        if (opcoes[0][0] < opcoes[1][0]) {
+            for (let i = opcoes[0][0]; i <= opcoes[1][0]; i++)
+                result.push([i]);
+        } else if (opcoes[0][0] > opcoes[1][0]) {
+            for (let i = opcoes[0][0]; i >= opcoes[1][0]; i--)
+                result.push([i]);
+        } else {
+            let loop = (opcoes[0][1] - opcoes[1][1]);
+            loop = loop < 0 ? loop * -1 : loop;
+            for (let i = 0; i <= loop; i++) {
+                result.push([opcoes[0][0]])
+            }
+        }
+        if (opcoes[0][1] < opcoes[1][1]) {
+            for (let i = opcoes[0][1]; i <= opcoes[1][1]; i++) {
+                result[cont].push(i);
+                cont++;
+            }
+        } else if (opcoes[0][1] > opcoes[1][1]) {
+            for (let i = opcoes[0][1]; i >= opcoes[1][1]; i--) {
+                result[cont].push(i);
+                cont++;
+            }
+        } else {
+            for (let i = 0; i < result.length; i++) {
+                result[i].push(opcoes[0][1]);
+            }
+        }
+        return result.filter(x => `${x[0]}-${x[1]}` != `${opcoes[1][0]}-${opcoes[1][1]}`);
     }
 
     const _jogadas = {
