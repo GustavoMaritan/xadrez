@@ -209,35 +209,29 @@
     const $peao = {
         getPositions(element, pos, isClara, ativo, filter) {
             let virgem = !!+$(element).attr('data-virgem');
-            function _brancaPretaSobeDesce() {
-                //DECIDE SUBINO OU DESCENDO
-                return (isClara && settings.game.rodada % 2 != 0) ||
-                    (!isClara && settings.game.rodada % 2 == 0)
-            }
-
             let movs = _filter([], {
-                r: _brancaPretaSobeDesce() ? +pos[0] + 1 : +pos[0] - 1,
+                r: isClara ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] + 1,
                 t: 'atk'
             }, filter, pos);
             movs = _filter(movs, {
-                r: _brancaPretaSobeDesce() ? +pos[0] + 1 : +pos[0] - 1,
+                r: isClara ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] - 1,
                 t: 'atk'
             }, filter, pos);
             if (ativo) {
                 movs = _filter(movs, {
-                    r: +pos[0] + (_brancaPretaSobeDesce() ? 1 : -1),
+                    r: +pos[0] + (isClara ? 1 : -1),
                     c: +pos[1],
                     t: 'mov'
                 }, filter, pos);
                 if (virgem)
                     movs = _filter(movs, {
-                        r: +pos[0] + (_brancaPretaSobeDesce() ? 2 : -2),
+                        r: +pos[0] + (isClara ? 2 : -2),
                         c: +pos[1],
                         t: 'mov',
                         peao2: {
-                            r: +pos[0] + (_brancaPretaSobeDesce() ? 1 : -1),
+                            r: +pos[0] + (isClara ? 1 : -1),
                             c: +pos[1],
                         }
                     }, filter, pos);

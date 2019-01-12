@@ -13,18 +13,18 @@ window.$create = (function () {
         }
     }
 
-    function _peao(rodada) {
+    function _peao() {
         for (let p = 0; p < 8; p++) {
             $(`[data-pos="2-${p + 1}"]`)
-                .html(_html(rodada % 2 != 0 ? 'clara' : 'escura', p, 'peao', `2-${p + 1}`));
+                .html(_html('clara', p, 'peao', `2-${p + 1}`));
         }
         for (let p = 0; p < 8; p++) {
             $(`[data-pos="7-${p + 1}"]`)
-                .html(_html(rodada % 2 != 0 ? 'escura' : 'clara', p, 'peao', `7-${p + 1}`));
+                .html(_html('escura', p, 'peao', `7-${p + 1}`));
         }
     }
 
-    function _pecasMedias(rodada) {
+    function _pecasMedias() {
         let pc = {
             torre: [`1-1`, `1-8`, `8-1`, `8-8`],
             cavalo: [`1-2`, `1-7`, `8-2`, `8-7`],
@@ -33,27 +33,17 @@ window.$create = (function () {
         Object.keys(pc).forEach(x => {
             pc[x].forEach((y, i) => {
                 $(`[data-pos="${y}"]`).html(
-                    _html(rodada % 2 != 0
-                        ? i < 2 ? 'clara' : 'escura'
-                        : i < 2 ? 'escura' : 'clara', i, x, y, 'media')
+                    _html(i < 2 ? 'clara' : 'escura', i, x, y, 'media')
                 );
             })
         });
     }
 
-    function _pecasgrandes(rodada) {
-        $(`[data-pos="1-5"]`).html(
-            _html(rodada % 2 != 0 ? 'clara' : 'escura', 1, 'rainha', '1-5', 'grande')
-        );
-        $(`[data-pos="1-4"]`).html(
-            _html(rodada % 2 != 0 ? 'clara' : 'escura', 1, 'rei', '1-4', 'grande')
-        );
-        $(`[data-pos="8-5"]`).html(
-            _html(rodada % 2 != 0 ? 'escura' : 'clara', 1, 'rainha', '8-5', 'grande')
-        );
-        $(`[data-pos="8-4"]`).html(
-            _html(rodada % 2 != 0 ? 'escura' : 'clara', 1, 'rei', '8-4', 'grande')
-        );
+    function _pecasgrandes() {
+        $(`[data-pos="1-5"]`).html(_html('clara', 1, 'rainha', '1-5', 'grande'));
+        $(`[data-pos="1-4"]`).html(_html('clara', 1, 'rei', '1-4', 'grande'));
+        $(`[data-pos="8-5"]`).html(_html('escura', 1, 'rainha', '8-5', 'grande'));
+        $(`[data-pos="8-4"]`).html(_html('escura', 1, 'rei', '8-4', 'grande'));
     }
 
     function _html(cor, id, tipo, pos, tam) {
@@ -84,9 +74,12 @@ window.$create = (function () {
 
     function _new(rodada) {
         _removePecas()
-        _peao(rodada);
-        _pecasMedias(rodada);
-        _pecasgrandes(rodada);
+        _peao();
+        _pecasMedias();
+        _pecasgrandes();
+        let rotate = rodada % 2 != 0 ? 180 : 0;
+        $('.tabuleiro').css({ transform: `rotate(${rotate}deg)` });
+        $('.peca').css({ transform: `rotate(${rotate}deg)` });
     }
 
     function _removePecas() {
