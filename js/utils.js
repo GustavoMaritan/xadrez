@@ -35,6 +35,7 @@
             noXequeMateMovs = [];
         },
         inclinar(obj) {
+            return;
             let rotate = getRotationDegrees($('.tabuleiro'));
             $('.tabuleiro').css({
                 transform: `perspective(50em) rotateX(${obj.value}deg) rotate(${rotate}deg)`
