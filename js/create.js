@@ -76,7 +76,7 @@ window.$create = (function () {
         _peao();
         _pecasMedias();
         _pecasgrandes();
-        let rotate = rodada % 2 != 0 ? 180 : 0;
+        let rotate = rodada % 2 == 0 ? 180 : 0;
         $('.tabuleiro').css({ transform: `perspective(50em) rotateX(${$('#rotateX').val()}deg) rotate(${rotate}deg)` });
         $('.peca').css({ transform: `rotate(${rotate}deg)` });
     }
