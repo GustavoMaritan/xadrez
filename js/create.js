@@ -60,7 +60,7 @@ window.$create = (function () {
 
     function _init() {
         _tabuleiro();
-        if (true) {
+        if (false) {
             // GAMBI SÓ PRA TESTES
             $('.casa[data-pos="1-1"]').html($create.html('clara', new Date().getTime(), 'torre', "1-1", 'media'));
             $('.casa[data-pos="1-4"]').html($create.html('clara', new Date().getTime(), 'rei', "1-4", 'grande'));
@@ -68,9 +68,7 @@ window.$create = (function () {
             $('.casa[data-pos="8-5"]').html($create.html('escura', new Date().getTime(), 'rei', "8-5", 'grande'));
             return
         };
-        _peao(1);
-        _pecasMedias(1);
-        _pecasgrandes(1);
+        _new(1);
     }
 
     function _new(rodada) {
@@ -79,7 +77,7 @@ window.$create = (function () {
         _pecasMedias();
         _pecasgrandes();
         let rotate = rodada % 2 != 0 ? 180 : 0;
-        $('.tabuleiro').css({ transform: `rotate(${rotate}deg)` });
+        $('.tabuleiro').css({ transform: `perspective(50em) rotateX(${$('#rotateX').val()}deg) rotate(${rotate}deg)` });
         $('.peca').css({ transform: `rotate(${rotate}deg)` });
     }
 
