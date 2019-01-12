@@ -302,19 +302,37 @@
                 let torres =
                     $(`.peca[data-tipo="torre"][data-virgem="1"][data-cor="${$(element).attr('data-cor')}"]`);
 
-                if (!virgem || !torres.length || !settings.game.xeque) return _movs;
+                if (!virgem || !torres.length || settings.game.xeque) return _movs;
 
                 torres.each(function (i) {
                     let t = $(this).attr('data-pos').split('-').map(Number);
-
                     let tipoRoque = pos[1] - t[1] == '3' ? 'rei' : 'rainha';
-
-                    _movs.push({
-                        roque: {},
-                        r: 0,
-                        c: 0
-                    });
+                    let ini = pos[1] > t[1] ? t[1] : pos[1];
+                    let fim = pos[1] > t[1] ? pos[1] : t[1];
+                    let roqueDisposivel = [];
+                    for (let i = ini + 1; i < fim; i++) {
+                        let casa = _getCasa({
+                            r: pos[0],
+                            c: i
+                        });
+                        roqueDisposivel.push(!casa.html());
+                    }
+                    if (roqueDisposivel.some(x => !x)) return;
+                    let _mov = {
+                        r: pos[0],
+                        c: tipoRoque == 'rei' ? 2 : 6,
+                        roque: {
+                            peca: t,
+                            vai: {
+                                r: pos[0],
+                                c: tipoRoque == 'rei' ? 3 : 5
+                            }
+                        }
+                    }
+                    console.log('_mov', _mov)
+                    _movs.push(_mov);
                 });
+                return _movs;
             }
         },
         setMov(movs, pos, element) {

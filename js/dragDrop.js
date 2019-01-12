@@ -34,6 +34,7 @@ function drop(ev) {
     $(pc).attr('data-virgem', 0);
     $(ev.target).html(pc);
     _setMovPeao2(movimento);
+    _setMovRoque(movimento)
     let classe = $(pc).attr('data-cor');
     let total = $(`div.${classe}>.jogadas>p`).length;
     $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(ev.target).attr('data-pos')}</p>`)
@@ -53,6 +54,14 @@ function _setMovPeao2(movimento) {
     if (!movimento.peao2) return;
     $(`.casa[data-pos="${movimento.peao2.r}-${movimento.peao2.c}"]`)
         .attr('data-peao2', `${movimento.r}-${movimento.c}`);
+}
+
+function _setMovRoque(movimento) {
+    if (!movimento.roque) return;
+    let torre = $(`.peca[data-pos="${movimento.roque.peca[0]}-${movimento.roque.peca[1]}"]`);
+    torre.closest('.casa').empty();
+    torre.attr('data-pos', movimento.roque.vai.r + '-' + movimento.roque.vai.c);
+    $(`.casa[data-pos="${movimento.roque.vai.r + '-' + movimento.roque.vai.c}"]`).html(torre);
 }
 
 function _liberaMovXequeMate(casaDestino, peca) {
