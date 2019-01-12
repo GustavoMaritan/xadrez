@@ -64,12 +64,20 @@ window.$create = (function () {
             ` data-pos="${pos}"` +
             ` data-tipo="${tipo}"` +
             ` data-cor="${cor}"` +
+            ` data-virgem="1"` +
             ` class="peca ${cor} ${tam}">`
     }
 
     function _init(pecas) {
         _tabuleiro();
-        if (!pecas) return;
+        if (!pecas) {
+            // GAMBI SÓ PRA TESTES
+            $('.casa[data-pos="2-4"]').html($create.html('clara', new Date().getTime(), 'rei', "2-4", 'grande'));
+            $('.casa[data-pos="2-1"]').html($create.html('clara', new Date().getTime(), 'peao', "2-1", ''));
+            $('.casa[data-pos="4-8"]').html($create.html('escura', new Date().getTime(), 'torre', "4-8", 'medio'));
+            $('.casa[data-pos="8-8"]').html($create.html('escura', new Date().getTime(), 'rei', "8-8", 'grande'));
+            return
+        };
         _peao(1);
         _pecasMedias(1);
         _pecasgrandes(1);

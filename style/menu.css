@@ -7,7 +7,7 @@
 }
 
 .menu {
-    width: 50%;
+    width: 35%;
     display: flex;
     border: 1px solid #3e3e3e;
     flex-direction: column;

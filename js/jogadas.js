@@ -190,37 +190,38 @@
         }
     }
     const $peao = {
-        getPositions(pos, isClara, ativo, filter) {
-            let movs = _filter([], {
-                r: (
-                    (isClara && settings.game.rodada % 2 != 0) ||
+        getPositions(element, pos, isClara, ativo, filter) {
+            let virgem = !!+$(element).attr('data-virgem');
+            function _brancaPretaSobeDesce() {
+                //DECIDE SUBINO OU DESCENDO
+                return (isClara && settings.game.rodada % 2 != 0) ||
                     (!isClara && settings.game.rodada % 2 == 0)
-                ) ? +pos[0] + 1 : +pos[0] - 1,
+            }
+            let movs = _filter([], {
+                r: _brancaPretaSobeDesce() ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] + 1,
                 t: 'atk'
             }, filter, pos);
-
             movs = _filter(movs, {
-                r: (
-                    (isClara && settings.game.rodada % 2 != 0) ||
-                    (!isClara && settings.game.rodada % 2 == 0)
-                ) ? +pos[0] + 1 : +pos[0] - 1,
+                r: _brancaPretaSobeDesce() ? +pos[0] + 1 : +pos[0] - 1,
                 c: +pos[1] - 1,
                 t: 'atk'
             }, filter, pos);
-
-            if (ativo)
+            if (ativo) {
                 movs = _filter(movs, {
-                    r: +pos[0] + (
-                        (
-                            (isClara && settings.game.rodada % 2 != 0) ||
-                            (!isClara && settings.game.rodada % 2 == 0)
-                        )
-                            ? 1 : -1
-                    ),
+                    r: +pos[0] + (_brancaPretaSobeDesce() ? 1 : -1),
                     c: +pos[1],
                     t: 'mov'
                 }, filter, pos);
+
+                // if (virgem)
+                //     movs = _filter(movs, {
+                //         r: +pos[0] + (_brancaPretaSobeDesce() ? 1 : -1),
+                //         c: +pos[1],
+                //         t: 'mov'
+                //     }, filter, pos);
+            }
+
             return movs;
         },
         setMov(movs, pos, element, ativo) {
@@ -425,7 +426,7 @@
         peao: (element, ativo, item, filter) => {
             let isClara = $(element).attr(`data-cor`) == 'clara';
             let pos = _getPosition(element);
-            let movs = $peao.getPositions(pos, isClara, ativo, filter);
+            let movs = $peao.getPositions(element, pos, isClara, ativo, filter);
             movs = _filterMovs(element, movs, item);
             $peao.setMov(movs, pos, element, ativo, item);
         },

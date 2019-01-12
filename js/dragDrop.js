@@ -35,11 +35,12 @@ function drop(ev) {
         : $(ev.target).closest('casa');
     let pos = elem.attr('data-pos').split('-');
     let casa = movimentos.find(x => +x.r == +pos[0] && +x.c == +pos[1]);
-    if (!casa) return ev.preventDefault();
+    if (!casa) return ev.preventDefault(); // CASA NAO ENCONTRADA
     let pc = document.getElementById(data);
     let old = $(pc).closest('div');
-    if (!_liberaMovXequeMate(ev.target, pc)) return ev.preventDefault();
+    if (!_liberaMovXequeMate(ev.target, pc)) return ev.preventDefault(); // XEQUE 
     $(pc).attr('data-pos', pos.join('-'));
+    $(pc).attr('data-virgem', 0);
     $(ev.target).html(pc);
     let classe = $(pc).attr('data-cor');
     let total = $(`div.${classe}>.jogadas>p`).length;

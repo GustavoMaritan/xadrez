@@ -90,12 +90,15 @@
         <div class="menu">
             <div>
                 <ul class="settings">
-                    <li><input type="checkbox" checked data-tipo="movimentos" onchange="ajudas(this)" id="">Movimentos</li>
-                    <li><input type="checkbox" checked data-tipo="ultimoMovimento" onchange="ajudas(this)" id="">Ultimos
+                    <li>
+                        <input type="checkbox" checked data-tipo="movimentos" onchange="$utils.ajudas(this)" id="">Movimentos</li>
+                    <li>
+                        <input type="checkbox" checked data-tipo="ultimoMovimento" onchange="$utils.ajudas(this)" id="">Ultimos
                         Movimentos</li>
-                    <li><input type="checkbox" checked data-tipo="ultimoMovimentoClick" onchange="ajudas(this)" id="">Ultimos
+                    <li><input type="checkbox" checked data-tipo="ultimoMovimentoClick" onchange="$utils.ajudas(this)"
+                            id="">Ultimos
                         Movimentos Persistir</li>
-                    <li><input type="checkbox" checked data-tipo="selected" onchange="ajudas(this)" id="">Peca
+                    <li><input type="checkbox" checked data-tipo="selected" onchange="$utils.ajudas(this)" id="">Peca
                         selecionada</li>
                 </ul>
             </div>
@@ -110,7 +113,8 @@
                 </div>
             </div>
             <div>
-                <button onclick="newGame()">New</button>
+                <button onclick="$utils.newGame()">New</button>
+                <input type="range" min="0" max="56" value="0" onchange="$utils.inclinar(this)">
             </div>
         </div>
     </div>
@@ -119,32 +123,10 @@
         let movimentos = [];
         let movimentosNoCheck = [];
         let noXequeMateMovs = [];
-
-        function newGame() {
-            settings.game._new();
-            $create.new(settings.game.rodada);
-            movimentos = [];
-            movimentosNoCheck = [];
-            noXequeMateMovs = [];
-        }
-        function start() {
-            $('.tabuleiro').toggleClass('off')
-        }
-        function ajudas(obj) {
-            settings.ajudas[$(obj).data('tipo')] = $(obj).prop('checked');
-        }
         $create.init(true);
-        /*
-        $create.init();
-        $('.casa[data-pos="2-4"]').html($create.html('clara', new Date().getTime(), 'rei', "2-4", 'grande'));
-        $('.casa[data-pos="2-1"]').html($create.html('clara', new Date().getTime(), 'peao', "2-1", ''));
-        $('.casa[data-pos="4-8"]').html($create.html('escura', new Date().getTime(), 'torre', "4-8", 'medio'));
-        $('.casa[data-pos="8-8"]').html($create.html('escura', new Date().getTime(), 'rei', "8-8", 'grande'));
-        */
 
         $(document).on('mousedown', '.peca', function () {
             if (settings.game.mate) return;
-
             let cor = $(this).attr('data-cor');
             if (settings.game.jogadorVezCor != cor) return;
             let _pos = $(this).attr('data-pos').split('-').map(Number);
@@ -166,7 +148,6 @@
             if (movimentos.length && settings.ajudas.selected)
                 $(this).closest(`.casa`).addClass('selected');
         });
-
 
         //GAMBI INSERE PECAS
         let corDefault = 'clara';
@@ -198,8 +179,6 @@
         /*
             * Peão andar 2 primeira mexida - podendo ser comido nas duas casas
             * Roque
-            * Cria Regras do jogo
-
             https://br.freepik.com/
         */
     </script>
