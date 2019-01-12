@@ -313,6 +313,7 @@
                 torres.each(function (i) {
                     let t = $(this).attr('data-pos').split('-').map(Number);
 
+                    let tipoRoque = pos[1] - t[1] == '3' ? 'rei' : 'rainha';
 
                     _movs.push({
                         roque: {},
