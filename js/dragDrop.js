@@ -45,6 +45,35 @@ function drop(ev) {
         from: $(old).attr('data-pos').split('-').map(Number),
         to: $(ev.target).attr('data-pos').split('-').map(Number)
     });
+
+    //if (!_moverPeca()) return ev.preventDefault();
+}
+
+function _moverPeca(destino, peca) {
+    let elem = $(ev.target).hasClass('casa')
+        ? $(ev.target)
+        : $(ev.target).closest('casa');
+    let pos = elem.attr('data-pos').split('-');
+    let movimento = movimentos.find(x => +x.r == +pos[0] && +x.c == +pos[1]);
+    if (!movimento) return false; // CASA NAO ENCONTRADA
+    let pc = document.getElementById(data);
+    let old = $(pc).closest('div');
+    if (!_liberaMovXequeMate(ev.target, pc)) return false; // XEQUE 
+    $(pc).attr('data-pos', pos.join('-'));
+    $(pc).attr('data-virgem', 0);
+    $(ev.target).html(pc);
+    _setMovPeao2(movimento);
+    _setMovRoque(movimento)
+    let classe = $(pc).attr('data-cor');
+    let total = $(`div.${classe}>.jogadas>p`).length;
+    $(`div.${classe}>.jogadas`).prepend(`<p>${total + 1} - ${$(pc).attr('data-tipo')} - ${$(ev.target).attr('data-pos')}</p>`)
+    $utils.efetivoMov(ev.target, old);
+    $verificaXeque(pc);
+    settings.game.alterarJogadorVez({
+        peca: $(pc).attr('data-tipo'),
+        from: $(old).attr('data-pos').split('-').map(Number),
+        to: $(ev.target).attr('data-pos').split('-').map(Number)
+    });
 }
 
 function _setMovPeao2(movimento) {
@@ -58,10 +87,7 @@ function _setMovPeao2(movimento) {
 
 function _setMovRoque(movimento) {
     if (!movimento.roque) return;
-    let torre = $(`.peca[data-pos="${movimento.roque.peca[0]}-${movimento.roque.peca[1]}"]`);
-    torre.closest('.casa').empty();
-    torre.attr('data-pos', movimento.roque.vai.r + '-' + movimento.roque.vai.c);
-    $(`.casa[data-pos="${movimento.roque.vai.r + '-' + movimento.roque.vai.c}"]`).html(torre);
+    _move(movimento.roque.peca, [movimento.roque.vai.r, movimento.roque.vai.c]);
 }
 
 function _liberaMovXequeMate(casaDestino, peca) {
@@ -71,4 +97,27 @@ function _liberaMovXequeMate(casaDestino, peca) {
     let _peca = noXequeMateMovs.find(x => x.peca[0] == _posPeca[0] && x.peca[1] == _posPeca[1])
     if (!_peca) return false;
     return _peca.movimentos.some(x => x.r == _posDest[0] && x.c == _posDest[1]);
+}
+
+function _move(from, to, speed) {
+    from = from || [1, 8];
+    to = to || [8, 1];
+    let width = ($('.tabuleiro').width() * 12.5) / 100;
+    let height = ($('.tabuleiro').height() * 12.5) / 100;
+    let position = $(`.peca[data-pos="${from[0]}-${from[1]}"]`).position();
+    let casasCols = width * (from[1] - to[1]) * (from[1] > to[1] ? 1 : -1);
+    casasCols = casasCols * (from[1] > to[1] ? -1 : 1);
+    let casasRows = height * (from[0] - to[0]) * (from[0] > to[0] ? 1 : -1);
+    casasRows = casasRows * (from[0] > to[0] ? -1 : 1);
+    $(`.peca[data-pos="${from[0]}-${from[1]}"]`).animate({
+        left: position.left + casasCols,
+        top: position.top + casasRows,
+    }, speed || 500, function () {
+        let peca = $(this);
+        peca.attr(`data-pos`, `${to[0]}-${to[1]}`);
+        peca.attr(`data-virgem`, 0);
+        peca.css({ left: 'auto', top: 'auto' })
+        $(`.casa[data-pos="${from[0]}-${from[1]}"]`).empty();
+        $(`.casa[data-pos="${to[0]}-${to[1]}"]`).html(peca);
+    });
 }
