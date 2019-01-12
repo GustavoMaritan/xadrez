@@ -66,7 +66,11 @@
                         }
                     })
                     settings.game.rodada++;
-                    settings.game._jogadorVez = settings.game.rodada % 2 == 0 ? 2 : 1;
+                    settings.game.resetPlayer();
+                    settings.game._jogadorVez =
+                        settings.game.jogador1.cor == 'clara' ? 1 : 2;
+                    settings.game.xeque = null;
+                    settings.game.mate = null;
                 }
             },
             historico: []
@@ -129,18 +133,16 @@
         function ajudas(obj) {
             settings.ajudas[$(obj).data('tipo')] = $(obj).prop('checked');
         }
-        /*
         $create.init(true);
-        */
+        /*
         $create.init();
         $('.casa[data-pos="2-4"]').html($create.html('clara', new Date().getTime(), 'rei', "2-4", 'grande'));
         $('.casa[data-pos="2-1"]').html($create.html('clara', new Date().getTime(), 'peao', "2-1", ''));
         $('.casa[data-pos="4-8"]').html($create.html('escura', new Date().getTime(), 'torre', "4-8", 'medio'));
         $('.casa[data-pos="8-8"]').html($create.html('escura', new Date().getTime(), 'rei', "8-8", 'grande'));
+        */
 
         $(document).on('mousedown', '.peca', function () {
-            console.log('1', 1)
-
             if (settings.game.mate) return;
 
             let cor = $(this).attr('data-cor');
@@ -150,8 +152,6 @@
                 noXequeMateMovs.length &&
                 !noXequeMateMovs.some(x => x.peca[0] == _pos[0] && x.peca[1] == _pos[1] && x.movimentos.length)
             ) return;
-            console.log('2', 1)
-
             $utils.resetMovs();
             movimentos = [];            // TODO MOVIMENTOS POSSIVEIS
             movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
