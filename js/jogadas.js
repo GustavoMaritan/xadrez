@@ -329,7 +329,6 @@
                             }
                         }
                     }
-                    console.log('_mov', _mov)
                     _movs.push(_mov);
                 });
                 return _movs;
