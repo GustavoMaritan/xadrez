@@ -46,7 +46,7 @@ window.$create = (function () {
         $(`[data-pos="8-4"]`).html(_html('escura', 1, 'rei', '8-4', 'grande'));
     }
 
-    function _html(cor, id, tipo, pos, tam) {
+    function _html(cor, id, tipo, pos, tam, virgem) {
         return `<img id="${tipo}-${cor}-${id}"` +
             ` src="./pecas/${tipo}${cor != 'clara' ? 2 : ''}.png"` +
             ' draggable="true"' +
@@ -54,7 +54,7 @@ window.$create = (function () {
             ` data-pos="${pos}"` +
             ` data-tipo="${tipo}"` +
             ` data-cor="${cor}"` +
-            ` data-virgem="1"` +
+            ` data-virgem="${virgem != null ? virgem : 1}"` +
             ` class="peca ${cor} ${tam}">`
     }
 
@@ -64,10 +64,9 @@ window.$create = (function () {
             // GAMBI SÓ PRA TESTES
             $('.casa[data-pos="1-1"]').html($create.html('clara', new Date().getTime(), 'torre', "1-1", 'media'));
             $('.casa[data-pos="1-4"]').html($create.html('clara', new Date().getTime(), 'rei', "1-4", 'grande'));
-            $('.casa[data-pos="1-6"]').html($create.html('clara', new Date().getTime(), 'torre', "1-6", 'media'));
+            $('.casa[data-pos="1-6"]').html($create.html('clara', new Date().getTime(), 'torre', "1-6", 'media', 0));
             $('.casa[data-pos="8-5"]').html($create.html('escura', new Date().getTime(), 'rei', "8-5", 'grande'));
-            $('.casa[data-pos="1-8"]').html($create.html('escura', new Date().getTime(), 'torre', "1-8", 'media'));
-
+            $('.casa[data-pos="1-8"]').html($create.html('escura', new Date().getTime(), 'torre', "1-8", 'media', 0));
             return
         };
         _new(1);

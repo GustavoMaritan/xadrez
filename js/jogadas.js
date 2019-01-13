@@ -332,8 +332,9 @@
         setMov(movs, pos, element) {
             let corAdvers = $(element).attr('data-cor') == 'clara' ? 'escura' : 'clara';
             $(`.peca[data-cor="${corAdvers}"]`).each(function (obj) {
-                $jogadas[$(this).attr('data-tipo')](this);
+                $jogadas[$(this).attr('data-tipo')](this, null, null, true);
             });
+
             let possiveis = movs.map(x => {
                 if (!movimentos.some(y => y.r == x.r && y.c == x.c)) {
                     let casa = _getCasa(x);
@@ -376,8 +377,8 @@
             }
         });
     }
-    const _filterMovs = (element, movs, item) => {
-        if (item) return movs;
+    const _filterMovs = (element, movs, item, teste) => {
+        if (item || teste) return movs;
         _verificaAdversario(element);
         return movimentosNoCheck.length
             ? movs.filter(x => movimentosNoCheck.some(y => y.some(z => z.r == x.r && z.c == x.c)))
@@ -398,10 +399,13 @@
         let _rei = $(`.peca[data-tipo="rei"][data-cor="${cor == 'clara' ? 'escura' : 'clara'}"]`);
         let _pos = _rei.attr('data-pos').split('-').map(Number);
         movimentos = [];
-
+        let movimentos2 = [];
         $(`.peca[data-cor="${cor}"]`).each(function (obj) {
             $jogadas[$(this).attr('data-tipo')](this, false, false, _pos);
+            movimentos.map(x => movimentos2.push(x));
+            movimentos = [];
         });
+        movimentos = movimentos2;
         if (!movimentos.filter(x => x.atacante).length) {
             settings.game.xeque = null;
             return;
@@ -498,8 +502,8 @@
         },
         torre: (element, ativo, item, filter) => {
             let pos = _getPosition(element);
-            let movs = $torre.getPositions(pos, filter);
-            movs = _filterMovs(element, movs, item);
+            let movs = $torre.getPositions(pos, filter && filter.length ? filter : false);
+            movs = _filterMovs(element, movs, item, !!filter);
             $torre.setMov(movs, pos, element, ativo, item);
         },
         cavalo: (element, ativo, item, filter) => {
