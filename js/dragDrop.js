@@ -69,7 +69,7 @@ function _finalizaDrop(pc, destino, movimento) {
     _setMovRoque(movimento)
     let classe = $(pc).attr('data-cor');
     let total = $(`div.${classe}>.jogadas > p`).length;
-    $(`div.${classe}>.jogadas`).prepend(` < p > ${total + 1} - ${$(pc).attr('data-tipo')} - ${$(destino).attr('data-pos')}</p > `)
+    $(`div.${classe}>.jogadas`).prepend(`<p> ${total + 1} - ${$(pc).attr('data-tipo')} - ${$(destino).attr('data-pos')}</p > `)
     $utils.efetivoMov(destino, old);
     $verificaXeque(pc);
     settings.game.alterarJogadorVez({
@@ -106,7 +106,7 @@ function _liberaMovXequeMate(casaDestino, peca) {
 function _move(from, to, speed, callback) {
     let width = ($('.tabuleiro').width() * 12.5) / 100;
     let height = ($('.tabuleiro').height() * 12.5) / 100;
-    let _peca = $(`.casa[data-pos="${from[0]}-${from[1]}"]`).find('.peca');
+    let _peca = $(`.peca[data-pos="${from[0]}-${from[1]}"]`);
     let position = _peca.position();
     let casasCols = width * (from[1] - to[1]) * (from[1] > to[1] ? 1 : -1);
     casasCols = casasCols * (from[1] > to[1] ? -1 : 1);
@@ -117,7 +117,7 @@ function _move(from, to, speed, callback) {
         top: position.top + casasRows,
     }, speed || 500, function () {
         let peca = $(this);
-        peca.attr(`data-pos`, `${to[0]}-${to[1]} `);
+        peca.attr(`data-pos`, `${to[0]}-${to[1]}`);
         peca.attr(`data-virgem`, 0);
         peca.css({ left: 'auto', top: 'auto' })
         $(`.casa[data-pos="${from[0]}-${from[1]}"]`).empty();

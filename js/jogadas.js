@@ -414,7 +414,7 @@
         movimentos = [];
         const _r = settings.game.xeque[0].r;
         const _c = settings.game.xeque[0].c;
-        const _rei = $(`.casa[data-pos="${_r}-${_c}"]`).find('.peca');
+        const _rei = $(`.peca[data-pos="${_r}-${_c}"]`);
 
         if (settings.game.xeque.length > 1) {
             $jogadas.rei(_rei, true);
