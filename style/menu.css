@@ -1,2 +1,49 @@
+.menu {
+    width: 340px;
+    height: 100%;
+    display: flex;
+    position: relative;
+    flex-direction: column-reverse;
+    background: #353535;
+    box-shadow: inset -31px 0px 14px -30px #000000;
+}
 
+.menu>.opcao{
+    width: 100%;
+}
+
+.menu>.opcao.historico{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
+
+.menu>.opcao.settings{
+}
+
+.menu>.opcao.settings>ul{
+    padding-left: 10px;
+    color: rgb(197, 197, 197)
+}
+.menu>.opcao.settings>ul>li{
+    list-style-type: none;
+}
+
+.menu>.opcao.historico>div{
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    padding: 5px;
+    color: rgb(180, 180, 180);
+}
+.menu>.opcao.historico .jogadas{
+    overflow: auto;
+    height: 200px;
+} 
+
+@media only screen and (max-width: 1100px) {
+    .menu{
+        display: none;
+    }
+}
 
