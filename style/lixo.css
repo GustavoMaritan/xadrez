@@ -1,0 +1,33 @@
+.lixo{
+    display: flex;
+    height: 100%;
+    background: #66b57b;
+    width: 20%;
+    flex-direction: column;
+}
+
+.lixo>div{
+    width: 99%;
+    height: 50%;
+    display: inline-block;
+    border: 1px solid #cacaca;
+}
+
+.lixo>div>div{
+    width: 32%;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: left;
+}
+
+.lixo>div.escura>div>img{
+    filter: grayscale(1);
+}
+
+@media only screen and (max-width: 910px) {
+    .lixo{
+        display: none;
+    }
+}
