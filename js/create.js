@@ -64,9 +64,9 @@ window.$create = (function () {
             // GAMBI SÓ PRA TESTES
             $('.casa[data-pos="1-1"]').html($create.html('clara', new Date().getTime(), 'torre', "1-1", 'media'));
             $('.casa[data-pos="1-4"]').html($create.html('clara', new Date().getTime(), 'rei', "1-4", 'grande'));
-            $('.casa[data-pos="1-8"]').html($create.html('clara', new Date().getTime(), 'torre', "1-8", 'media'));
+            $('.casa[data-pos="1-6"]').html($create.html('clara', new Date().getTime(), 'torre', "1-6", 'media'));
             $('.casa[data-pos="8-5"]').html($create.html('escura', new Date().getTime(), 'rei', "8-5", 'grande'));
-            $('.casa[data-pos="8-8"]').html($create.html('escura', new Date().getTime(), 'torre', "8-8", 'media'));
+            $('.casa[data-pos="1-8"]').html($create.html('escura', new Date().getTime(), 'torre', "1-8", 'media'));
 
             return
         };

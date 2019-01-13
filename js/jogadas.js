@@ -46,13 +46,6 @@
             for (let p = 0; p < 2; p++) {
                 for (let value = 1; value < 9; value++) {
                     if (value == (p % 2 == 0 ? +pos[0] : +pos[1])) continue;
-
-                    // movs.push({
-                    //     r: p % 2 == 0 ? value : +pos[0],
-                    //     c: p % 2 == 0 ? +pos[1] : value,
-                    //     t: p % 2 == 0 ? 'row' : 'col'
-                    // });
-
                     movs = _filter(movs, {
                         r: p % 2 == 0 ? value : +pos[0],
                         c: p % 2 == 0 ? +pos[1] : value,
@@ -91,6 +84,8 @@
             return $validMovs(ocupadas, movimentosNoCheckTorre, item, ativo, element, casaMov, mov, pos);
         },
         setMov(movs, pos, element, ativo, item) {
+            if (ativo)
+                console.log('movs', movs)
             movs.forEach(x => {
                 let mov = $torre.movValid(x, pos, element, ativo, item);
                 if (!mov) return;
@@ -373,6 +368,11 @@
         $(`.peca[data-cor="${corAdvers}"]`).each(function (obj) {
             if (['bispo', 'torre', 'rainha'].includes($(this).attr('data-tipo'))) {
                 $jogadas[$(this).attr('data-tipo')](this, false, element);
+                let _t = $(this).attr('data-pos').split('-').map(Number);
+                //Adiciona casa peca os movimentos possiveis
+                movimentosNoCheck.map(x => {
+                    x.push({ r: _t[0], c: _t[1] })
+                });
             }
         });
     }
