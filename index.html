@@ -1,95 +1,76 @@
 <!DOCTYPE html>
 <html>
-<div class=''></div>
 
 <head>
     <link rel="stylesheet" href="style/style.css">
-    <link rel="stylesheet" href="style/menu.css">
+    <link rel="stylesheet" href="style/index.css">
     <link rel="stylesheet" href="style/lixo.css">
+    <link rel="stylesheet" href="style/menu.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script>
-        let settings = {
-            ajudas: {
-                movimentos: true,
-                ultimoMovimento: true,
-                ultimoMovimentoClick: true,
-                selected: true,
-                check: true
-            },
-            game: {
-                rodada: 1,
-                xeque: null,
-                mate: null,
-                _jogadorVez: 1,
-                jogador1: {
-                    id: 1,
-                    cor: 'clara',
-                    jogadas: []
-                },
-                jogador2: {
-                    id: 2,
-                    cor: 'escura',
-                    jogadas: []
-                },
-                get jogadorVez() {
-                    return settings.game['jogador' + settings.game._jogadorVez];
-                },
-                get jogadorVezCor() {
-                    return settings.game['jogador' + settings.game._jogadorVez].cor;
-                },
-                setMovimentoJogVez(mov) {
-                    settings.game.jogadorVez.jogadas.push(mov);
-                },
-                alterarJogadorVez(mov) {
-                    settings.game.setMovimentoJogVez(mov);
-                    settings.game._jogadorVez = settings.game._jogadorVez == 1 ? 2 : 1;
-                    $(`.historico>div>span`).removeClass('ativo');
-                    $(`.historico>div.${settings.game.jogadorVez.cor}>span`).addClass('ativo');
-                },
-                resetPlayer() {
-                    settings.game.jogador1.jogadas = settings.game.jogador2.jogadas = [];
-                    settings.game.jogador1.cor = settings.game.jogador2.cor;
-                    settings.game.jogador2.cor = settings.game.jogador2.cor == 'clara' ? 'escura' : 'clara';
-                },
-                _new() {
-                    settings.historico.push({
-                        rodada: settings.game.rodada,
-                        vencedor: null,
-                        jogador1: {
-                            id: 1,
-                            cor: settings.game.jogador1.cor,
-                            jogadas: settings.game.jogador1.jogadas
-                        },
-                        jogador2: {
-                            id: 2,
-                            cor: settings.game.jogador2.cor,
-                            jogadas: settings.game.jogador2.jogadas
-                        }
-                    })
-                    settings.game.rodada++;
-                    settings.game.resetPlayer();
-                    settings.game._jogadorVez =
-                        settings.game.jogador1.cor == 'clara' ? 1 : 2;
-                    settings.game.xeque = null;
-                    settings.game.mate = null;
-                }
-            },
-            historico: []
-        }
-    </script>
+
+    <script src="./js/settings.js"></script>
     <script src="./js/create.js"></script>
     <script src="./js/dragDrop.js"></script>
     <script src="./js/utils.js"></script>
     <script src="./js/jogadas.js"></script>
     <style>
+        .menu {
+            width: 340px;
+            height: 100%;
+            display: flex;
+            position: relative;
+            flex-direction: column-reverse;
+            background: #353535;
+            box-shadow: inset -31px 0px 14px -30px #000000;
+        }
 
+        .menu>.opcao{
+            width: 100%;
+        }
+
+        .menu>.opcao.historico{
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+        }
+
+        .menu>.opcao.settings{
+        }
+
+        .menu>.opcao.settings>ul{
+            padding-left: 10px;
+            color: rgb(197, 197, 197)
+        }
+        .menu>.opcao.settings>ul>li{
+            list-style-type: none;
+        }
+
+        .menu>.opcao.historico>div{
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            padding: 5px;
+            color: rgb(180, 180, 180);
+        }
+        .menu>.opcao.historico .jogadas{
+            overflow: auto;
+            height: 200px;
+        } 
+
+        @media only screen and (max-width: 1100px) {
+    .menu{
+        display: none;
+    }
+}
+
+        
     </style>
 </head>
 
 <body>
     <div class="content">
         <div class="menu">
-            <div>
+            <div class="opcao settings">
                 <ul class="settings">
                     <li>
                         <input type="checkbox" checked data-tipo="movimentos" onchange="$utils.ajudas(this)" id="">Movimentos</li>
@@ -103,7 +84,7 @@
                         selecionada</li>
                 </ul>
             </div>
-            <div class="historico">
+            <div class="opcao historico">
                 <div class="clara">
                     <span class="ativo">Brancas</span>
                     <div class="jogadas"></div>
@@ -113,8 +94,11 @@
                     <div class="jogadas"></div>
                 </div>
             </div>
-            <div>
-                <button onclick="$utils.newGame()">New</button>
+            <div class="opcao placar">
+                <div>Jogador 1: 0</div>
+                <div>Jogador 2: 0</div>
+                <button onclick="$utils.newGame()">Novo Jogo</button>
+                <button onclick="$utils.newGame()">Desistir</button>
                 <input type="range" min="0" max="56" value="0" id="rotateX" onchange="$utils.inclinar(this)">
             </div>
         </div>
@@ -130,80 +114,7 @@
             </div>
         </div>
     </div>
-
-    <script>
-        let movimentos = [];
-        let movimentosNoCheck = [];
-        let noXequeMateMovs = [];
-        $create.init();
-
-        $(document).on('mousedown', '.peca', function () {
-            $('.peca').removeAttr('data-ativo');
-            if (settings.game.mate) return;
-            let cor = $(this).attr('data-cor');
-            if (settings.game.jogadorVezCor != cor) return;
-            let _pos = $(this).attr('data-pos').split('-').map(Number);
-            if (
-                noXequeMateMovs.length &&
-                !noXequeMateMovs.some(x => x.peca[0] == _pos[0] && x.peca[1] == _pos[1] && x.movimentos.length)
-            ) return;
-            $utils.resetMovs();
-            movimentos = [];            // TODO MOVIMENTOS POSSIVEIS
-            movimentosNoCheck = [];     // MOVIMENTOS POSSIVEIS CASO PECA QUE PROTEGE O REI
-            $jogadas[$(this).attr('data-tipo')](this, true);
-            if (noXequeMateMovs.length) {
-                let _peca = noXequeMateMovs.find(y => y.peca[0] == _pos[0] && y.peca[1] == _pos[1])
-                if (!_peca) movimentos = [];
-                else
-                    movimentos = movimentos.filter(x => _peca.movimentos.some(y => y.r == x.r && y.c == x.c));
-            }
-            $setCasas(movimentos);
-            if (movimentos.length)
-                $(this).attr('data-ativo', true);
-            if (movimentos.length && settings.ajudas.selected) {
-                $(this).closest(`.casa`).addClass('selected');
-            }
-        });
-
-        $(document).on('mousedown', '.casa', function () {
-            let peca = $('.peca[data-ativo]')[0];
-            if (!peca) return;
-            _moverPeca($(this), peca, true);
-        });
-
-        //GAMBI INSERE PECAS
-        let corDefault = 'clara';
-        $(document).on('keydown', '.casa', function (e) {
-            if (e.keyCode == 46)
-                return $(this).empty();
-            if (e.keyCode == 104) {
-                corDefault = corDefault == 'clara' ? 'escura' : 'clara';
-                return;
-            }
-
-            if (![97, 98, 99, 100, 101, 102,].includes(e.keyCode)) return;
-
-            let tipo = e.keyCode == 97
-                ? 'rei'
-                : e.keyCode == 98
-                    ? 'rainha'
-                    : e.keyCode == 99
-                        ? 'torre'
-                        : e.keyCode == 100
-                            ? 'cavalo'
-                            : e.keyCode == 101
-                                ? 'bispo'
-                                : 'peao';
-
-            $(this).html($create.html(corDefault, new Date().getTime(), tipo, $(this).data('pos'), 'medio'));
-        });
-
-        /*
-            * RODAR TABULEIRO
-            * TABULEIRO INVERTIDO (ORDEM CORDENADAS)
-            https://br.freepik.com/
-        */
-    </script>
+    <script src="./js/tela.js"></script>
 </body>
 
 </html>

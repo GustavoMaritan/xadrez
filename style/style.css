@@ -54,10 +54,17 @@
 
 .casa.clara {
     background: white;
+    background: #fdfdfcf2;
 }
 
 .casa.escura {
     background: rgb(102, 181, 123);
+    background: rgba(102, 181, 123, 0.88);
+
+    /* background-image: url('../pecas/textura/text5.jpg') !important;
+    background-repeat: no-repeat, repeat !important;
+    background-size: 100% 100% !important;
+    background-position: center !important; */
 }
 
 .peca {
