@@ -415,7 +415,6 @@
         const _r = settings.game.xeque[0].r;
         const _c = settings.game.xeque[0].c;
         const _rei = $(`.peca[data-pos="${_r}-${_c}"]`);
-
         if (settings.game.xeque.length > 1) {
             $jogadas.rei(_rei, true);
             if (movimentos.length) {
@@ -427,7 +426,6 @@
             return;
         }
         let _movPossiveis = _mateMovPossiveis([_r, _c], settings.game.xeque[0].atacante);
-        console.log('_xequeMate', _rei);
         $jogadas.rei(_rei, true);
         noXequeMateMovs = [{ peca: [_r, _c], movimentos: movimentos }];
         $(`.peca[data-cor="${$(_rei).attr('data-cor')}"]`).not('[data-tipo="rei"]').each(function (obj) {
@@ -526,7 +524,6 @@
             $bispo.setMov(movs, pos, element, ativo, item);
         },
         rei: (element, ativo) => {
-            //console.log('_xequeMate3', element);
             let pos = _getPosition(element);
             let movs = $rei.getPositions(pos, element, ativo);
             if (!ativo) {
