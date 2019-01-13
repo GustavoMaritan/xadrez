@@ -1,9 +1,10 @@
 .lixo{
     display: flex;
     height: 100%;
-    background: #66b57b;
+    /* background: #66b57b; */
     width: 20%;
     flex-direction: column;
+    background: linear-gradient(to right, rgba(102,181,123,1) 0%, rgb(126, 189, 142) 19%, rgba(102,181,123,1) 42%, rgb(81, 173, 105) 63%, rgb(91, 175, 113) 81%, rgba(76,166,99,1) 100%);
 }
 
 .lixo>div{

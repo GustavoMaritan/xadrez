@@ -41,23 +41,26 @@ function _moverPeca(destino, peca, manual) {
         $(pc).attr('data-pos', pos.join('-'));
         $(pc).attr('data-virgem', 0);
         if (elem.find('.peca')) {
-            let e = elem.find('.peca');
-            $(`.lixo>div.${e.attr('data-cor')}`).append(`
-            <div>
-                <img 
-                    src="./pecas/${e.attr('data-tipo')}${e.attr('data-cor') == 'clara' ? '' : '2'}.png" 
-                    data-tipo="${e.attr('data-tipo')}"
-                    class="peca-lixo ${
-                e.attr('data-tipo') == 'rei'
-                    ? 'grande' : e.attr('data-tipo') == 'peao'
-                        ? 'pequena' : 'media'
-                } "></img>
-            </div >
-            `)
+            _setLixo(elem.find('.peca'));
         }
         $(destino).html(pc);
         _finalizaDrop(pc, destino, movimento);
     }
+}
+
+function _setLixo(elem) {
+    $(`.lixo>div.${elem.attr('data-cor')}`).append(`
+    <div>
+        <img 
+            src="./pecas/${elem.attr('data-tipo')}${elem.attr('data-cor') == 'clara' ? '' : '2'}.png" 
+            data-tipo="${elem.attr('data-tipo')}"
+            class="peca-lixo ${
+        elem.attr('data-tipo') == 'rei'
+            ? 'grande' : elem.attr('data-tipo') == 'peao'
+                ? 'pequena' : 'media'
+        } "></img>
+    </div >
+    `)
 }
 
 function _finalizaDrop(pc, destino, movimento) {
@@ -79,10 +82,10 @@ function _finalizaDrop(pc, destino, movimento) {
 
 function _setMovPeao2(movimento) {
     if (movimento.peao2Atk)
-        $(`.casa[data - pos="${movimento.peao2Atk[0]}-${movimento.peao2Atk[1]}"]`).empty();
+        $(`.casa[data-pos="${movimento.peao2Atk[0]}-${movimento.peao2Atk[1]}"]`).empty();
     $(`.casa`).removeAttr('data-peao2');
     if (!movimento.peao2) return;
-    $(`.casa[data - pos= "${movimento.peao2.r}-${movimento.peao2.c}"]`)
+    $(`.casa[data-pos="${movimento.peao2.r}-${movimento.peao2.c}"]`)
         .attr('data-peao2', `${movimento.r} -${movimento.c} `);
 }
 
@@ -103,21 +106,26 @@ function _liberaMovXequeMate(casaDestino, peca) {
 function _move(from, to, speed, callback) {
     let width = ($('.tabuleiro').width() * 12.5) / 100;
     let height = ($('.tabuleiro').height() * 12.5) / 100;
-    let position = $(`.peca[data - pos= "${from[0]}-${from[1]}"]`).position();
+    let _peca = $(`.casa[data-pos="${from[0]}-${from[1]}"]`).find('.peca');
+    let position = _peca.position();
     let casasCols = width * (from[1] - to[1]) * (from[1] > to[1] ? 1 : -1);
     casasCols = casasCols * (from[1] > to[1] ? -1 : 1);
     let casasRows = height * (from[0] - to[0]) * (from[0] > to[0] ? 1 : -1);
     casasRows = casasRows * (from[0] > to[0] ? -1 : 1);
-    $(`.peca[data - pos= "${from[0]}-${from[1]}"]`).animate({
+    _peca.animate({
         left: position.left + casasCols,
         top: position.top + casasRows,
     }, speed || 500, function () {
         let peca = $(this);
-        peca.attr(`data - pos`, `${to[0]} -${to[1]} `);
-        peca.attr(`data - virgem`, 0);
+        peca.attr(`data-pos`, `${to[0]}-${to[1]} `);
+        peca.attr(`data-virgem`, 0);
         peca.css({ left: 'auto', top: 'auto' })
-        $(`.casa[data - pos="${from[0]}-${from[1]}"]`).empty();
-        $(`.casa[data - pos= "${to[0]}-${to[1]}"]`).html(peca);
+        $(`.casa[data-pos="${from[0]}-${from[1]}"]`).empty();
+        let casaTo = $(`.casa[data-pos="${to[0]}-${to[1]}"]`);
+        if (casaTo.find('.peca'))
+            _setLixo(casaTo.find('.peca'));
+        casaTo.html(peca);
+        
         callback && callback();
     });
 }
